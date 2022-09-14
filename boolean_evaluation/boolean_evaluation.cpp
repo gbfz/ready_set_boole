@@ -54,7 +54,8 @@ auto evaluate_and_replace(std::string& s, auto op_pos) -> std::string&
 auto rpn_slide_evaluator(std::string s) -> bool
 {
 	auto op_pos = s.find_first_not_of("10");
-	while (op_pos != std::string::npos) {
+	while (op_pos != std::string::npos)
+	{
 		s = evaluate_and_replace(s, op_pos);
 		op_pos = s.find_first_not_of("10", op_pos - 2);
 	}
@@ -68,25 +69,21 @@ auto eval_formula(const std::string& formula) -> bool
 	try {
 		return rpn_slide_evaluator(formula);
 	} catch (...) {
-		std::cerr << "Invalid formula\n";
+		std::cerr << "Invalid formula: " << formula << '\n';
 		return false;
 	}
-}
-
-auto print(bool b)
-{
-	std::cout << std::boolalpha << b << '\n';
 }
 
 #include <optional>
 #include <cassert>
 
-auto test(const std::string& s, std::optional<bool> expected)
+auto test(const std::string& s, std::optional<bool> expected) -> void
 {
-	auto b = eval_formula(s);
-	if (expected) {
-		print(b);
-		assert(b == expected);
+	auto eval_result = eval_formula(s);
+	if (expected)
+	{
+		std::cout << std::boolalpha << eval_result << '\n';
+		assert(eval_result == expected);
 	}
 }
 
@@ -102,8 +99,9 @@ auto main() -> int
 	test("01^", true);
 	test("11^", false);
 	test("1111111111&&&&&&&&^", false);
-	// test("|", {});
-	// test("11", {});
-	// test("0!0!", {});
-	// test("aboba", {});
+	test("1011||=", true);
+	test("|", {});
+	test("11", {});
+	test("0!0!", {});
+	test("aboba", {});
 }
