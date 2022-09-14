@@ -7,85 +7,85 @@ enum NodeType
 {
 	Value,
 	Operator,
-	None
 };
 
 struct IAstNode
 {
-	std::shared_ptr<IAstNode> left, right;
+	std::shared_ptr<IAstNode>	left;
+	std::shared_ptr<IAstNode>	right;
+	const char					value;
+	const NodeType				type;
+
+	IAstNode(char v, NodeType t): value(v), type(t) {}
 	virtual int exec() const = 0;
 	virtual ~IAstNode() {}
-	char value;
-	NodeType type;
-	IAstNode(char v, NodeType t): value(v), type(t) {}
 };
 
-struct TrueNode : virtual IAstNode
+struct TrueNode : IAstNode
 {
-	int exec() const
+	int exec() const override
 	{
 		return 1;
 	}
-	TrueNode(): IAstNode('1', Value) {}
+	TrueNode(): IAstNode('1', NodeType::Value) {}
 };
 
-struct FalseNode : virtual IAstNode
+struct FalseNode : IAstNode
 {
-	int exec() const
+	int exec() const override
 	{
 		return 0;
 	}
-	char value;
-	FalseNode(): IAstNode('0', Value) {}
+	FalseNode(): IAstNode('0', NodeType::Value) {}
 };
 
 struct NotNode : IAstNode
 {
-	int exec() const; // TODO
-	NotNode(): IAstNode('!', Operator) {}
+	int exec() const override; // TODO
+	NotNode(): IAstNode('!', NodeType::Operator) {}
 };
 
 struct AndNode : IAstNode
 {
-	int exec() const
+	int exec() const override
 	{
 		return left->exec() & right->exec();
 	}
-	AndNode(): IAstNode('&', Operator) {}
+	AndNode(): IAstNode('&', NodeType::Operator) {}
 };
 
 struct OrNode : IAstNode
 {
-	int exec() const
+	int exec() const override
 	{
 		return left->exec() | right->exec();
 	}
-	OrNode(): IAstNode('|', Operator) {}
+	OrNode(): IAstNode('|', NodeType::Operator) {}
 };
 
 struct XorNode : IAstNode
 {
-	int exec() const
+	int exec() const override
 	{
 		return left->exec() ^ right->exec();
 	}
-	XorNode(): IAstNode('^', Operator) {}
+	XorNode(): IAstNode('^', NodeType::Operator) {}
 };
 
 struct CondNode : IAstNode
 {
-	int exec() const
+	int exec() const override
 	{
 		return left->exec() ? right->exec() : 1;
 	}
-	CondNode(): IAstNode('>', Operator) {}
+	CondNode(): IAstNode('>', NodeType::Operator) {}
 };
 
 struct EqNode : IAstNode
 {
-	int exec() const
+	int exec() const override
 	{
 		return left->exec() == right->exec();
 	}
-	EqNode(): IAstNode('=', Operator) {}
+	EqNode(): IAstNode('=', NodeType::Operator) {}
 };

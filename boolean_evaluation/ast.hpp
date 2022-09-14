@@ -3,14 +3,17 @@
 
 class Ast
 {
-	std::shared_ptr<IAstNode> root;
-	void insert(std::shared_ptr<IAstNode>& node);
-	void insert(std::shared_ptr<IAstNode>& where,
-				std::shared_ptr<IAstNode>& node);
-	std::shared_ptr<IAstNode> choose(char c);
-	void print(std::shared_ptr<IAstNode> node, size_t offt) const;
+	using Nodeptr = std::shared_ptr<IAstNode>;
+	Nodeptr 	root;
+
+	void		insert(Nodeptr& where, Nodeptr&& node);
+	Nodeptr		choose(char c);
+	void		print(Nodeptr node, size_t offt) const;
+	bool 		is_valid(Nodeptr node) const;
 public:
-	void build(std::string s);
-	bool exec() const;
-	void print() const;
+	Ast&		build(std::string s);
+	bool		is_valid() const;
+	bool		exec() const;
+	const Ast&	print() const;
+	void		reset();
 };

@@ -2,9 +2,9 @@
 #include "astNode.hpp"
 #include <stdexcept>
 #include <algorithm>
-#include <typeinfo>
+#include <iostream>
 
-using std::shared_ptr, std::make_shared;
+using std::make_shared;
 
 std::shared_ptr<IAstNode> Ast::choose(char c)
 {
@@ -21,36 +21,50 @@ std::shared_ptr<IAstNode> Ast::choose(char c)
 	throw std::runtime_error("Unknown token");
 }
 
-void Ast::insert(shared_ptr<IAstNode>& where,
-				 shared_ptr<IAstNode>& node)
+void Ast::insert(Nodeptr& where, Nodeptr&& node)
 {
 	if (!where) {
 		where = node;
 		return;
 	}
-	if (where->type == Operator && node->type == Operator) {
-		if (!where->right)
-			return insert(where->right, node);
-		return insert(where->left, node);
-	}
+	if (!where->right)
+		return insert(where->right, std::move(node));
 	if (!where->left)
-		return insert(where->left, node);
-	return insert(where->right, node);
-}
-
-void Ast::insert(std::shared_ptr<IAstNode>& node)
-{
-	insert(root, node);
-}
-
-void Ast::build(std::string s)
-{
-	// for (char c : s | std::views::reverse) {
-	std::reverse(s.begin(), s.end());
-	for (char c : s) {
-		auto node = choose(c);
-		insert(node);
+		return insert(where->left, std::move(node));
+	if (node->type == Value) {
+		if (where->right->type == Operator)
+			return insert(where->right, std::move(node));
+		if (where->left->type == Operator)
+			return insert(where->left, std::move(node));
 	}
+	// throw std::runtime_error("What");
+}
+
+bool Ast::is_valid(Nodeptr node) const
+{
+	if (!node)
+		return true;
+	if (node->type == Operator) {
+		if (!(node->left && node->right))
+			return false;
+	}
+	return is_valid(node->left) && is_valid(node->right);
+}
+
+bool Ast::is_valid() const
+{
+	return is_valid(root);
+}
+
+Ast& Ast::build(std::string s)
+{
+	// for (char c : s | std::ranges::views::reverse) {
+	std::reverse(s.begin(), s.end());
+	for (char c : s)
+		insert(root, choose(c));
+	if (!is_valid(root))
+		throw std::runtime_error("Invalid formula");
+	return *this;
 }
 
 bool Ast::exec() const
@@ -59,8 +73,6 @@ bool Ast::exec() const
 		throw std::runtime_error("No ast to exec");
 	return root->exec();
 }
-
-#include <iostream>
 
 void Ast::print(std::shared_ptr<IAstNode> node, size_t offt) const
 {
@@ -71,7 +83,13 @@ void Ast::print(std::shared_ptr<IAstNode> node, size_t offt) const
 	print(node->left, offt + 2);
 }
 
-void Ast::print() const
+const Ast& Ast::print() const
 {
 	print(root, 0);
+	return *this;
+}
+
+void Ast::reset()
+{
+	root.reset();
 }
