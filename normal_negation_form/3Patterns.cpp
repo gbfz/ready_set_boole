@@ -3,6 +3,10 @@
 #include <map>
 #include <optional>
 #include <ranges>
+#include <regex>
+#include <functional>
+
+#include <cassert>
 
 /* Patterns:
  *
@@ -15,9 +19,9 @@
  * Distributivity II:	AB&C|	≡	CA|CB|&
  */
 
-/* AB|C&! -> DM2
- * AB|!C!| -> DM1
- * A!B!&C!|
+/* AB=C>
+ * AB&A!B!&|C>
+ * aC>
  */
 
 auto is_operator(char c) -> bool
@@ -30,6 +34,13 @@ auto is_variable(char c) -> bool
 {
 	return std::isupper(c) && !is_operator(c);
 }
+
+auto is_single_binary_operation(const std::string& s, auto i) -> bool
+{
+	return is_variable(s[i - 2])
+		&& is_variable(s[i - 1])
+		&& !is_operator(s[i + 1]);
+};
 
 enum class Pattern
 {
@@ -55,30 +66,62 @@ static const std::unordered_map<std::string, Pattern> original =
 	{"&|",	Pattern::Distr2},
 };
 
-static const std::unordered_map<Pattern, std::string> normal =
+auto is_normal_form(const std::string& s) -> bool
 {
-	{Pattern::DoubleNegation,	"a"},
-	{Pattern::Implication,		"a!b|"},
-	{Pattern::Equivalence,		"a1&a!b!&|"},
-	{Pattern::DeMorgans1,		"a!b!&"},
-	{Pattern::DeMorgans2,		"a!b!|"},
-	{Pattern::Distr1,			"cb&ca&|"},
-	{Pattern::Distr2,			"cb|ca|&"},
-};
-
-auto print_map(const auto& map) -> void
-{
-	std::cout << "Map:\n";
-	for (const auto& [key, value] : map)
-		std::cout << "Key: " << key << ", value: " << value << '\n';
+	static const std::regex exp("!!|\\|!|&!|>|=");
+	return !std::regex_search(s, exp);
 }
 
-auto match_pattern(std::string s) -> Pattern
+auto rewrite_double_negation(std::string& s)
 {
-	for (const auto& [key, value] : original)
-		if (s.find(key) != std::string::npos)
-			return value;
-	throw std::runtime_error("Could not match pattern");
+	// s.erase(s.find("!!"), 2);
+	auto pos = s.find("!!");
+	auto replacement = {s.at(pos - 1)};
+	s.replace(pos - 1, 2, replacement);
+}
+
+auto rewrite_implication(std::string& s)
+{
+	auto pos = s.find(">");
+	auto replacement = {s.at(pos - 2), '!', s.at(pos - 1), '|'};
+	s.replace(pos - 2, 3, replacement);
+}
+
+auto rewrite_equivalence(std::string& s)
+{
+	auto pos = s.find("=");
+	auto a = s.at(pos - 2);
+	auto b = s.at(pos - 1);
+	auto replacement = {a, b, '&', a, '!', b, '!', '&', '|'};
+	s.replace(pos - 2, 3, replacement);
+}
+
+auto rewrite_deMorgans1(std::string& s)
+{
+	auto pos = s.find("|!");
+	auto replacement = {s.at(pos - 2), '!', s.at(pos - 1), '!', '|'};
+	s.replace(pos - 2, 4, replacement);
+}
+
+auto rewrite_deMorgans2(std::string& s)
+{
+	auto pos = s.find("&!");
+	auto replacement = {s.at(pos - 2), '!', s.at(pos - 1), '!', '&'};
+	s.replace(pos - 2, 4, replacement);
+}
+
+static const std::unordered_map<Pattern, std::function<void(std::string&)>> rewriters =
+{
+	{Pattern::DoubleNegation,	rewrite_double_negation},
+	{Pattern::Implication,		rewrite_implication},
+	{Pattern::Equivalence,		rewrite_equivalence},
+	{Pattern::DeMorgans1,		rewrite_deMorgans1},
+	{Pattern::DeMorgans2,		rewrite_deMorgans2},
+};
+
+auto rewrite(std::string& s, Pattern pattern)
+{
+	return rewriters.at(pattern)(s);
 }
 
 auto match_op(const std::string& s, char op) -> size_t
@@ -86,25 +129,33 @@ auto match_op(const std::string& s, char op) -> size_t
 	auto i = s.find(op);
 	if (i == std::string::npos)
 		return std::string::npos;
-	if (is_variable(s.at(i - 2)) && is_variable(s.at(i - 1)))
+	if (is_single_binary_operation(s, i))
 		return i - 2;
 	return std::string::npos;
 }
 
 auto simplify(std::string& s,
 			  std::map<char, std::string>& m,
+			  char sub) -> void;
+
+auto simplify_and_save(std::string& s,
+					   std::map<char, std::string>& m,
+					   char sub,
+					   size_t pos) -> void
+{
+	m.insert({sub, s.substr(pos, 3)});
+	s.replace(pos, 3, {sub});
+	return simplify(s, m, sub + 1);
+}
+
+auto simplify(std::string& s,
+			  std::map<char, std::string>& m,
 			  char sub) -> void
 {
-	if (auto i = match_op(s, '|'); i != std::string::npos) {
-		m.insert({sub, s.substr(i, 3)});
-		s.replace(i, 3, {sub});
-		return simplify(s, m, sub + 1);
-	}
-	if (auto i = match_op(s, '&'); i != std::string::npos) {
-		m.insert({sub, s.substr(i, 3)});
-		s.replace(i, 3, {sub});
-		return simplify(s, m, sub + 1);
-	}
+	if (auto i = match_op(s, '|'); i != std::string::npos)
+		return simplify_and_save(s, m, sub, i);
+	if (auto i = match_op(s, '&'); i != std::string::npos)
+		return simplify_and_save(s, m, sub, i);
 }
 
 auto reinstate(std::string& s,
@@ -113,33 +164,65 @@ auto reinstate(std::string& s,
 {
 	if (i >= s.size())
 		return;
-	if (m.contains(s[i]))
-		s.replace(i, 1, m[s[i]]);
+	if (m.contains(s[i])) {
+		s.replace(i, 1, m.at(s[i]));
+		m.erase(s[i]);
+	}
 	reinstate(s, m, i + 1);
 }
 
-auto testS(std::string s)
+auto match_pattern(const std::string& s) -> Pattern
+{
+	static const std::regex exp("!!|\\|\\!|\\&\\!|>|=");
+	std::smatch matched_str;
+	if (std::regex_search(s, matched_str, exp))
+		return original.at(matched_str.str());
+	std::cerr << matched_str.str(0) << '\n';
+	std::cerr << matched_str.str() << '\n';
+	throw std::runtime_error("Fuck");
+}
+
+auto negation_normal_form(std::string s) -> std::string
+{
+	std::map<char, std::string> simp_map;
+	while (!is_normal_form(s))
+	{
+		simplify(s, simp_map, 'a');
+		std::cout << "s1: " << s << '\n';
+		rewrite(s, match_pattern(s));
+		std::cout << "s2: " << s << '\n';
+		reinstate(s, simp_map, 0);
+		std::cout << "s3: " << s << '\n';
+	}
+	return s;
+}
+
+auto testSimRei(std::string s)
 {
 	auto p = [](auto&&... args) {
 		((std::cout << args), ...);
 		std::cout << '\n';
 	};
 	std::map<char, std::string> m;
-	char sub = 'a';
-	simplify(s, m, sub);
+	simplify(s, m, 'a');
 	p(s);
 	reinstate(s, m, 0);
 	p(s);
-	// p(negation_normal_form(s));
+}
+
+auto testForm(const std::string& s)
+{
+	auto p = [](auto&&... args) {
+		((std::cout << std::boolalpha << args), ...);
+		std::cout << '\n';
+	};
+	p(negation_normal_form(s));
 }
 
 auto main() -> int
 {
-	auto p = [](auto&&... args) {
-		((std::cout << args), ...);
-		std::cout << '\n';
-	};
-	// testS("AB|DE&");
-	testS("AB|C&!"); // aC&!
-	// p(negation_normal_form("A|B!"));
+	// testForm("AB|C&!");
+	// testForm("AB|");
+	// testForm("AB=C>");
+	testSimRei("AB=C>");
 }
