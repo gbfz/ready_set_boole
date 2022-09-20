@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <unordered_map>
 #include <map>
@@ -19,10 +20,33 @@
  * Distributivity II:	AB&C|	≡	CA|CB|&
  */
 
-/* AB=C>
- * AB&A!B!&|C>
- * aC>
- */
+using SimplTable = std::unordered_map<char, std::string>;
+
+enum class Pattern
+{
+	DoubleNegation,
+	Implication,
+	Equivalence,
+	DeMorgans1,
+	DeMorgans2,
+};
+
+auto p = [](auto&&... args) {
+	((std::cout << std::boolalpha << args), ...);
+	std::cout << '\n';
+};
+
+auto pp(Pattern pt)
+{
+	switch (pt)
+	{
+		case Pattern::DoubleNegation: p("Double negation"); break;
+		case Pattern::Implication: p("Implication"); break;
+		case Pattern::Equivalence: p("Equivalence"); break;
+		case Pattern::DeMorgans1: p("DeMorgans1"); break;
+		case Pattern::DeMorgans2: p("DeMorgans2"); break;
+	}
+}
 
 auto is_operator(char c) -> bool
 {
@@ -42,18 +66,11 @@ auto is_single_binary_operation(const std::string& s, auto i) -> bool
 		&& !is_operator(s[i + 1]);
 };
 
-enum class Pattern
+auto is_normal_form(const std::string& s) -> bool
 {
-	DoubleNegation,
-	Implication,
-	Equivalence,
-	DeMorgans1,
-	DeMorgans2,
-	Distr1,
-	Distr2,
-	And,
-	Or,
-};
+	static const std::regex exp("!!|\\|!|&!|>|=");
+	return !std::regex_search(s, exp);
+}
 
 static const std::unordered_map<std::string, Pattern> original =
 {
@@ -62,51 +79,50 @@ static const std::unordered_map<std::string, Pattern> original =
 	{"=",	Pattern::Equivalence},
 	{"|!",	Pattern::DeMorgans1},
 	{"&!",	Pattern::DeMorgans2},
-	{"|&",	Pattern::Distr1},
-	{"&|",	Pattern::Distr2},
+	// {"|&",	Pattern::Distr1},
+	// {"&|",	Pattern::Distr2},
 };
-
-auto is_normal_form(const std::string& s) -> bool
-{
-	static const std::regex exp("!!|\\|!|&!|>|=");
-	return !std::regex_search(s, exp);
-}
 
 auto rewrite_double_negation(std::string& s)
 {
-	// s.erase(s.find("!!"), 2);
-	auto pos = s.find("!!");
-	auto replacement = {s.at(pos - 1)};
+	auto pos = s.rfind("!!");
+	auto replacement = {s[pos - 1]};
 	s.replace(pos - 1, 2, replacement);
 }
 
 auto rewrite_implication(std::string& s)
 {
-	auto pos = s.find(">");
-	auto replacement = {s.at(pos - 2), '!', s.at(pos - 1), '|'};
+	auto pos = s.rfind(">");
+	auto a = s[pos - 2];
+	auto b = s[pos - 1];
+	auto replacement = {a, '!', b, '|'};
 	s.replace(pos - 2, 3, replacement);
 }
 
 auto rewrite_equivalence(std::string& s)
 {
-	auto pos = s.find("=");
-	auto a = s.at(pos - 2);
-	auto b = s.at(pos - 1);
+	auto pos = s.rfind("=");
+	auto a = s[pos - 2];
+	auto b = s[pos - 1];
 	auto replacement = {a, b, '&', a, '!', b, '!', '&', '|'};
 	s.replace(pos - 2, 3, replacement);
 }
 
 auto rewrite_deMorgans1(std::string& s)
 {
-	auto pos = s.find("|!");
-	auto replacement = {s.at(pos - 2), '!', s.at(pos - 1), '!', '|'};
+	auto pos = s.rfind("|!");
+	auto a = s[pos - 2];
+	auto b = s[pos - 1];
+	auto replacement = {a, '!', b, '!', '|'};
 	s.replace(pos - 2, 4, replacement);
 }
 
 auto rewrite_deMorgans2(std::string& s)
 {
-	auto pos = s.find("&!");
-	auto replacement = {s.at(pos - 2), '!', s.at(pos - 1), '!', '&'};
+	auto pos = s.rfind("&!");
+	auto a = s[pos - 2];
+	auto b = s[pos - 1];
+	auto replacement = {a, '!', b, '!', '&'};
 	s.replace(pos - 2, 4, replacement);
 }
 
@@ -124,47 +140,32 @@ auto rewrite(std::string& s, Pattern pattern)
 	return rewriters.at(pattern)(s);
 }
 
-auto match_op(const std::string& s, char op) -> size_t
+auto match_op(const std::string& s) -> size_t
 {
-	auto i = s.find(op);
+	auto i = s.find_last_of("|&!>=");
 	if (i == std::string::npos)
-		return std::string::npos;
+		return i;
 	if (is_single_binary_operation(s, i))
 		return i - 2;
 	return std::string::npos;
 }
 
-auto simplify(std::string& s,
-			  std::map<char, std::string>& m,
-			  char sub) -> void;
-
-auto simplify_and_save(std::string& s,
-					   std::map<char, std::string>& m,
-					   char sub,
-					   size_t pos) -> void
+auto simplify(std::string& s, SimplTable& m, char sub) -> void
 {
+	auto pos = match_op(s);
+	if (pos == std::string::npos)
+		return;
 	m.insert({sub, s.substr(pos, 3)});
 	s.replace(pos, 3, {sub});
 	return simplify(s, m, sub + 1);
 }
 
-auto simplify(std::string& s,
-			  std::map<char, std::string>& m,
-			  char sub) -> void
-{
-	if (auto i = match_op(s, '|'); i != std::string::npos)
-		return simplify_and_save(s, m, sub, i);
-	if (auto i = match_op(s, '&'); i != std::string::npos)
-		return simplify_and_save(s, m, sub, i);
-}
-
-auto reinstate(std::string& s,
-			   std::map<char, std::string>& m,
-			   size_t i) -> void
+auto reinstate(std::string& s, SimplTable& m, size_t i) -> void
 {
 	if (i >= s.size())
 		return;
-	if (m.contains(s[i])) {
+	if (m.contains(s[i]))
+	{
 		s.replace(i, 1, m.at(s[i]));
 		m.erase(s[i]);
 	}
@@ -177,33 +178,25 @@ auto match_pattern(const std::string& s) -> Pattern
 	std::smatch matched_str;
 	if (std::regex_search(s, matched_str, exp))
 		return original.at(matched_str.str());
-	std::cerr << matched_str.str(0) << '\n';
-	std::cerr << matched_str.str() << '\n';
 	throw std::runtime_error("Fuck");
 }
 
 auto negation_normal_form(std::string s) -> std::string
 {
-	std::map<char, std::string> simp_map;
+	SimplTable simplified_tokens_map;
 	while (!is_normal_form(s))
 	{
-		simplify(s, simp_map, 'a');
-		std::cout << "s1: " << s << '\n';
+		simplify(s, simplified_tokens_map, 'a');
+		// pp(match_pattern(s));
 		rewrite(s, match_pattern(s));
-		std::cout << "s2: " << s << '\n';
-		reinstate(s, simp_map, 0);
-		std::cout << "s3: " << s << '\n';
+		reinstate(s, simplified_tokens_map, 0);
 	}
 	return s;
 }
 
 auto testSimRei(std::string s)
 {
-	auto p = [](auto&&... args) {
-		((std::cout << args), ...);
-		std::cout << '\n';
-	};
-	std::map<char, std::string> m;
+	SimplTable m;
 	simplify(s, m, 'a');
 	p(s);
 	reinstate(s, m, 0);
@@ -212,17 +205,13 @@ auto testSimRei(std::string s)
 
 auto testForm(const std::string& s)
 {
-	auto p = [](auto&&... args) {
-		((std::cout << std::boolalpha << args), ...);
-		std::cout << '\n';
-	};
 	p(negation_normal_form(s));
 }
 
 auto main() -> int
 {
-	// testForm("AB|C&!");
-	// testForm("AB|");
-	// testForm("AB=C>");
-	testSimRei("AB=C>");
+	// testForm("AB&!"); // A!B!|
+	// testForm("AB|C&!"); // A!B!&C!|
+	// testForm("AB|"); //AB|
+	testForm("AB=C>"); // AB&A!B!&|C|
 }
