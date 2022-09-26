@@ -1,5 +1,4 @@
 #include <boost/spirit/home/x3.hpp>
-#include <boost/fusion/container/deque.hpp>
 
 #include <iostream>
 
@@ -11,58 +10,65 @@ namespace parser {
 	using x3::_attr;
 	using x3::ascii::char_;
 
-	const auto set_val = [](auto& ctx)
+	const auto set_primitive = [](auto& ctx)
 	{
-		_val(ctx) = _attr(ctx) - '0';
+		_val(ctx) = get<char>(_attr(ctx)) - '0';
 	};
 
-	const auto get_two_operands = [](auto& ctx) -> std::pair<int, int>
+	const auto single_binary_operation = [](int fst, int snd, char op) -> int
 	{
-		return { at_c<0>(_attr(ctx)), at_c<1>(_attr(ctx)) };
+		switch (op)
+		{
+			case '&': return fst & snd;
+			case '|': return fst | snd;
+			case '^': return fst ^ snd;
+			case '>': return fst ? snd : 1;
+			case '=': return fst == snd;
+		}
+		throw std::runtime_error("How tf did u get here");
 	};
 
-	const auto and_op = [](auto& ctx)
+	const auto basic_binary_operation = [](auto& ctx)
 	{
-		auto [fst, snd] = get_two_operands(ctx);
-		_val(ctx) = fst & snd;
+		int fst = at_c<0>(_attr(ctx));
+		int snd = at_c<1>(_attr(ctx));
+		char op = at_c<2>(_attr(ctx));
+		_val(ctx) = single_binary_operation(fst, snd, op);
 	};
 
-	const auto or_op = [](auto& ctx)
+	const auto compound_binary_operation = [](auto& ctx)
 	{
-		auto [fst, snd] = get_two_operands(ctx);
-		_val(ctx) = fst | snd;
+		_val(ctx) = at_c<0>(_attr(ctx));
+		for (const auto& p : at_c<1>(_attr(ctx)))
+		{
+			int snd = at_c<0>(p);
+			char op = at_c<1>(p);
+			_val(ctx) = single_binary_operation(_val(ctx), snd, op);
+		}
 	};
 
-	x3::rule<class Expr, int> expr_ = "expr";
-	x3::rule<class And,  int> and_	= "and";
-	x3::rule<class Or,   int> or_	= "or";
-	x3::rule<class Val,  int> val	= "val";
+	x3::rule<class Start, int> start = "expr";
+	x3::rule<class Operation, char> operation = "operation";
+	x3::rule<class Token, int> token = "single token";
+	x3::rule<class Primitive, int> primitive = "primitive";
 
-	/* There should be some basic "node"
-	 * which is to be a variant of either a primitive or and operation
-	 */
+	const auto start_def	 = (token >> *(primitive >> operation))		[compound_binary_operation];
 
-	const auto expr__def = and_ | or_;
-	// const auto and__def = ((val >> val) >> char_('&')) [and_op];
-	// const auto or__def  = ((val >> val) >> char_('|')) [or_op];
-	const auto and__def = ((val >> val) >> char_('&')) [and_op]
-						| (expr_ >> char_('&'));
+	const auto token_def	 = (primitive >> primitive >> operation)	[basic_binary_operation];
 
-	const auto or__def  = ((val >> val) >> char_('|')) [or_op]
-						| (expr_ >> char_('|'));
+	const auto primitive_def = (char_('1') | char_('0'))				[set_primitive];
 
-	const auto val_def = char_('1') [set_val]
-					   | char_('0') [set_val];
+	const auto operation_def = char_('&') | char_('|') | char_('^') | char_('>') | char_('=');
 
-	BOOST_SPIRIT_DEFINE(expr_, and_, or_, val);
+	BOOST_SPIRIT_DEFINE(start, operation, token, primitive);
 }
 
 int main()
 {
-	std::string s = "10|1&";
+	std::string s = "11&0^0=";
 	int yeah;
 	auto iter = s.begin();
-	bool r = boost::spirit::x3::parse(iter, s.end(), parser::expr_, yeah);
+	bool r = boost::spirit::x3::parse(iter, s.end(), parser::start, yeah);
 	if (r && iter == s.end())
 	{
 		std::cout << "-------------------------\n";
@@ -75,7 +81,7 @@ int main()
 		std::string rest(iter, s.end());
 		std::cout << "-------------------------\n";
 		std::cout << "Parsing failed\n";
-		std::cout << "stopped at: \": " << rest << "\"\n";
+		std::cout << "Stopped at: \": " << rest << "\"\n";
 		std::cout << "-------------------------\n";
 	}
 }
