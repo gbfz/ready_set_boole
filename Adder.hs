@@ -1,3 +1,5 @@
+module Adder (adder) where
+
 import Data.Bits
 
 adder 0 b = b
