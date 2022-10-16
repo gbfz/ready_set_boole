@@ -2,7 +2,7 @@
 
 void test(const std::string& formula)
 {
-	auto maybeRoot = Parser::generateTree(formula);
+	auto maybeRoot = AST::generateTree(formula);
 	if (!maybeRoot)
 	{
 		std::cerr << "Invalid formula: " << formula << '\n';
@@ -15,12 +15,13 @@ void test(const std::string& formula)
 
 int main()
 {
-	test("1!0|");
+	test("0!1^");
+	// test("1!0|");
 	test("1!0!|");
-	test("1!0!0&|");
-	test("10!^0&");
+	// test("1!0!0&|");
+	// test("10!^0&");
 	test("1!!00!1!||&");
-	test("1!!1^!");
-	test("aboba");
-	test("01||");
+	// test("1!!1^!");
+	// test("aboba");
+	// test("01||");
 }

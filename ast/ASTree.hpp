@@ -1,7 +1,14 @@
 #pragma once
 #include <vector>
+#include <string>
 #include <optional>
 #include <iostream>
+
+namespace AST
+{
+
+bool validate(const std::string& s);
+std::optional<struct Node> generateTree(std::string s);
 
 struct Node : protected std::vector<Node>
 {
@@ -33,15 +40,4 @@ struct Node : protected std::vector<Node>
 	}
 };
 
-using ASTree = Node;
-
-class Parser
-{
-public:
-	static bool validate(const std::string& s);
-	static std::optional<Node> generateTree(std::string s);
-private:
-	static Node generateTree(std::string& s, Node& node);
-	static bool is_binop(char c);
-	Parser() {}
-};
+} // namespace AST
