@@ -1,4 +1,5 @@
 #include "ASTree.hpp"
+#include <bits/utility.h>
 
 namespace AST::detail {
 
@@ -35,6 +36,15 @@ AST::Node generateTree(std::string& s, AST::Node& node)
 
 namespace AST {
 
+std::optional<Node> generateTree(std::string s)
+{
+	if (!validate(s))
+		return {};
+	AST::Node root(s.back());
+	s.pop_back();
+	return detail::generateTree(s, root);
+}
+
 bool validate(const std::string& s)
 {
 	auto sz = 0;
@@ -48,15 +58,6 @@ bool validate(const std::string& s)
 			return false;
 	}
 	return sz == 1;
-}
-
-std::optional<Node> generateTree(std::string s)
-{
-	if (!validate(s))
-		return {};
-	AST::Node root(s.back());
-	s.pop_back();
-	return detail::generateTree(s, root);
 }
 
 } // namespace ASTParser
