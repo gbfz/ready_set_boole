@@ -1,10 +1,7 @@
 #pragma once
-#include <algorithm>
 #include <vector>
 #include <string>
 #include <optional>
-#include <queue>
-#include <unistd.h>
 #include <iostream>
 
 namespace AST
@@ -34,15 +31,12 @@ struct Node : protected std::vector<Node>
 	{
 		switch (node.size())
 		{
-			case 0:
-				return printValue(pref, node.value, isRight);
-			case 1:
-				printValue(pref, node.value, isRight);
-				return printTree(pref + (isRight ? "ᐧ  " : "   "), node.fst_child(), false);
-			case 2:
-				printTree(pref + (isRight ? "   " : "ᐧ  "), node.fst_child(), true);
-				printValue(pref, node.value, isRight);
-				printTree(pref + (isRight ? "ᐧ  " : "   "), node.snd_child(), false);
+			case 0: return printValue(pref, node.value, isRight);
+			case 1: printValue(pref, node.value, isRight);
+					return printTree(pref + (isRight ? "ᐧ  " : "   "), node.fst_child(), false);
+			case 2: printTree(pref + (isRight ? "   " : "ᐧ  "), node.fst_child(), true);
+					printValue(pref, node.value, isRight);
+					printTree(pref + (isRight ? "ᐧ  " : "   "), node.snd_child(), false);
 		}
 	}
 
@@ -52,22 +46,20 @@ struct Node : protected std::vector<Node>
 	}
 	*/
 
-	friend void printTree(const Node& node, int tab = 0) noexcept
+	friend void printTree(const Node& node, int tab = 0) 
 	{
-		if (node.empty())
-			return printValue(tab, node.value);
-		else if (node.size() == 1)
+		switch (node.size())
 		{
-			printValue(tab, node.value);
-			return printTree(node.fst_child(), tab + 2);
+			case 0: return printValue(tab, node.value);
+			case 1: printValue(tab, node.value);
+					return printTree(node.fst_child(), tab + 2);
+			case 2: printTree(node.fst_child(), tab + 2);
+					printValue(tab, node.value);
+					return printTree(node.snd_child(), tab + 2);
 		}
-		printTree(node.fst_child(), tab + 2);
-		printValue(tab, node.value);
-		printTree(node.snd_child(), tab + 2);
 	}
 
 private:
-	// static void printValue(const std::string& prefix, char value, Direction dir);
 	// static void printValue(const std::string& prefix, char value, bool isRight);
 	static void printValue(int tab, char value);
 };
