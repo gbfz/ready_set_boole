@@ -1,4 +1,5 @@
 #pragma once
+#include <type_traits>
 #include <vector>
 #include <string>
 #include <optional>
@@ -9,9 +10,9 @@ namespace ast
 
 bool validate(const std::string& s);
 std::optional<struct tree> generateTree(std::string s);
+std::string treeToString(const ast::tree& tree, std::string acc = "");
 
 static constexpr char placeholder = '\0';
-struct placeholder_t {};
 
 struct tree : public std::vector<tree>
 {
@@ -21,11 +22,17 @@ struct tree : public std::vector<tree>
 	tree(int value) : value(value) {}
 
 	tree& add_child(tree& other);
-	tree& add_two(tree& fst, tree& snd);
 
 	tree& add_child(int value);
-	tree& add_two(int v1, int v2);
-	tree& add_two(placeholder_t, placeholder_t);
+	// tree& add_two(int v1, int v2);
+	// tree& add_two(tree& fst, tree& snd);
+	template <class NodeA, class NodeB>
+	tree& add_two(NodeA fst, NodeB snd)
+	{
+		emplace_back(std::forward<NodeA>(fst));
+		emplace_back(std::forward<NodeB>(snd));
+		return *this;
+	}
 
 	tree& fst_child();
 	const tree& fst_child() const;

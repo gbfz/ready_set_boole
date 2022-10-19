@@ -8,32 +8,27 @@ tree& tree::add_child(tree& other)
 	return *this;
 }
 
-tree& tree::add_two(tree& fst, tree& snd)
-{
-	emplace_back(fst);
-	emplace_back(snd);
-	return *this;
-}
-
-tree& tree::add_two(placeholder_t, placeholder_t)
-{
-	emplace_back(placeholder);
-	emplace_back(placeholder);
-	return *this;
-}
-
 tree& tree::add_child(int value)
 {
 	emplace_back(value);
 	return *this;
 }
 
+/*
 tree& tree::add_two(int v1, int v2)
 {
 	emplace_back(v1);
 	emplace_back(v2);
 	return *this;
 }
+
+tree& tree::add_two(tree& fst, tree& snd)
+{
+	emplace_back(fst);
+	emplace_back(snd);
+	return *this;
+}
+*/
 
 tree& tree::fst_child()
 {
@@ -69,6 +64,21 @@ bool tree::exec() const
 		case '=': return fst_child().exec() == snd_child().exec();
 	}
 	return value == '1';
+}
+
+std::string treeToString(const tree& tree, std::string acc)
+{
+	acc = char(tree.value) + acc;
+	std::string fst, snd;
+	switch (tree.size())
+	{
+		case 1: fst = treeToString(tree.fst_child());
+				return fst + acc;
+		case 2: fst = treeToString(tree.snd_child());
+				snd = treeToString(tree.fst_child());
+				return fst + snd + acc;
+	}
+	return acc;
 }
 
 // tree& tree::operator= (const tree& other)
