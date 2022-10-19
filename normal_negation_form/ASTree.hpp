@@ -13,10 +13,11 @@ std::optional<struct tree> generateTree(std::string s);
 static constexpr char placeholder = '\0';
 struct placeholder_t {};
 
-struct tree : protected std::vector<tree>
+struct tree : public std::vector<tree>
 {
 	int value;
 
+	tree() = default;
 	tree(int value) : value(value) {}
 
 	tree& add_child(tree& other);
@@ -34,14 +35,10 @@ struct tree : protected std::vector<tree>
 
 	bool exec() const;
 
-	tree& operator= (const tree& other);
+	// tree& operator= (const tree& other);
 
 	friend bool operator== (const tree& lhs, const tree& rhs);
-	// friend bool operator== (const tree& tree, placeholder_t);
-	bool operator== (placeholder_t)
-	{
-		return true;
-	}
+	friend struct std::hash<ast::tree>;
 
 	friend void printTree(const std::string& pref, const tree& node, bool isRight = false)
 	{

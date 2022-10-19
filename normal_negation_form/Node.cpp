@@ -71,12 +71,12 @@ bool tree::exec() const
 	return value == '1';
 }
 
-tree& tree::operator= (const tree& other)
-{
-	value = other.value;
-	assign(other.begin(), other.end());
-	return *this;
-}
+// tree& tree::operator= (const tree& other)
+// {
+// 	value = other.value;
+// 	assign(other.begin(), other.end());
+// 	return *this;
+// }
 
 bool operator== (const tree& lhs, const tree& rhs)
 {
@@ -86,7 +86,6 @@ bool operator== (const tree& lhs, const tree& rhs)
 		return true;
 	if (lhs.value != rhs.value || lhs.size() != rhs.size())
 		return false;
-	std::cout << char(lhs.value) << ", " << char(rhs.value) << '\n';
 	if (lhs.size() == 1 && rhs.size() == 1)
 		return lhs.fst_child() == rhs.fst_child();
 	return lhs.fst_child() == rhs.fst_child() && lhs.snd_child() == rhs.snd_child();
@@ -142,3 +141,24 @@ void tree::printValue(int tab, char value)
 */
 
 } // namespace ast
+
+/*
+template <>
+struct std::hash<ast::tree>
+{
+	size_t operator() (const ast::tree& node) const
+	{
+		switch (node.size())
+		{
+			case 0: return (std::hash<int>()(node.value) % 3) << 1;
+			case 1: return ((std::hash<int>()(node.value) % 3) << 1)
+						 ^ (std::hash<int>()(node.fst_child().value) % 3 << 1);
+			case 2: return ((std::hash<int>()(node.value) % 3) << 1)
+						 ^ (std::hash<int>()(node.fst_child().value) % 3 << 1)
+						 ^ (std::hash<int>()(node.snd_child().value) % 3
+ << 1);
+		}
+		return std::string::npos;
+	}
+};
+*/
