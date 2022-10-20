@@ -41,15 +41,13 @@ std::string treeToString(const tree& tree, std::string acc)
 
 bool operator== (const tree& lhs, const tree& rhs)
 {
-	if (rhs.value == ast::placeholder)
+	if (rhs.value == placeholder || lhs.value == placeholder)
 		return true;
-	if (lhs.empty() && rhs.empty() && lhs.value == rhs.value)
-		return true;
-	if (lhs.value != rhs.value && lhs.size() != rhs.size())
-		return false;
-	if (lhs.size() == 1 && rhs.size() == 1)
+	if (lhs.size() == 1 && rhs.size() == 1 && lhs.value == rhs.value)
 		return lhs.fst_child() == rhs.fst_child();
-	return lhs.fst_child() == rhs.fst_child() && lhs.snd_child() == rhs.snd_child();
+	if (lhs.size() == 2 && rhs.size() == 2 && lhs.value == rhs.value)
+		return lhs.fst_child() == rhs.fst_child() && lhs.snd_child() == rhs.snd_child();
+	return lhs.value == rhs.value;
 }
 
 void tree::printValue(const std::string& pref, char value, bool isRight)
@@ -63,30 +61,7 @@ void tree::printValue(const std::string& pref, char value, bool isRight)
 	};
 	std::cout << pref
 			  << (isRight ? "⦧ " : "⦦ " )
-			  << chooseColor()
-			  << '\'' << char(value) << '\''
-			  << resetColor() << '\n';
+			  << chooseColor() << '\'' << char(value) << '\'' << resetColor() << '\n';
 }
 
 } // namespace ast
-
-/*
-template <>
-struct std::hash<ast::tree>
-{
-	size_t operator() (const ast::tree& node) const
-	{
-		switch (node.size())
-		{
-			case 0: return (std::hash<int>()(node.value) % 3) << 1;
-			case 1: return ((std::hash<int>()(node.value) % 3) << 1)
-						 ^ (std::hash<int>()(node.fst_child().value) % 3 << 1);
-			case 2: return ((std::hash<int>()(node.value) % 3) << 1)
-						 ^ (std::hash<int>()(node.fst_child().value) % 3 << 1)
-						 ^ (std::hash<int>()(node.snd_child().value) % 3
- << 1);
-		}
-		return std::string::npos;
-	}
-};
-*/

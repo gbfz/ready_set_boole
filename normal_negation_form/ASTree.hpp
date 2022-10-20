@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <optional>
+#include <utility>
 #include <iostream>
 
 namespace ast
@@ -21,6 +22,9 @@ struct tree : public std::vector<tree>
 	tree() = default;
 	tree(int value) : value(value) {}
 
+	tree(const tree& other) : value(other.value)
+	{ assign(other.begin(), other.end()); }
+
 	template <class Node>
 	tree& add_child(Node n)
 	{
@@ -28,9 +32,13 @@ struct tree : public std::vector<tree>
 		return *this;
 	}
 
-	// tree& add_child(int value);
-	// tree& add_two(int v1, int v2);
-	// tree& add_two(tree& fst, tree& snd);
+	tree& operator= (const tree& other)
+	{
+		value = other.value;
+		assign(other.begin(), other.end());
+		return *this;
+	}
+
 	template <class NodeA, class NodeB>
 	tree& add_two(NodeA fst, NodeB snd)
 	{
