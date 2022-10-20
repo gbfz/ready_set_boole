@@ -29,15 +29,12 @@ ast::tree& nnf::detail::negation_normal_form(ast::tree& tree)
 	tree = rewrite(tree);
 	switch (tree.size())
 	{
-		case 0:
-			return tree;
-		case 1:
-			rewrite(tree.fst_child());
-			break;
-		case 2:
-			negation_normal_form(tree.fst_child());
-			negation_normal_form(tree.snd_child());
-			break;
+		case 0: return tree;
+		case 1: rewrite(tree.fst_child());
+				break;
+		case 2: negation_normal_form(tree.fst_child());
+				negation_normal_form(tree.snd_child());
+				break;
 	}
 	return rewrite(tree);
 }
