@@ -12,6 +12,7 @@ const ast::tree doubleNegationPattern()
 
 ast::tree& rewriteDoubleNegation(ast::tree& tree)
 {
+	std::cout << __FUNCTION__ << '\n';
 	tree = tree.fst_child().fst_child();
 	return tree;
 }
@@ -25,6 +26,7 @@ const ast::tree implicationPattern()
 
 ast::tree& rewriteImplication(ast::tree& tree)
 {
+	std::cout << __FUNCTION__ << '\n';
 	auto fst = tree.fst_child();
 	auto snd = tree.snd_child();
 	tree = ast::tree('|').add_two(fst, '!');
@@ -39,24 +41,25 @@ const ast::tree equivalencePattern()
 	return pattern;
 }
 
+// A ≡ B :: (!A | B) & (A | !B)
+// AB= :: A!B|AB!|&
 ast::tree& rewriteEquivalence(ast::tree& tree)
 {
-	auto fst = tree.fst_child();
-	auto snd = tree.snd_child();
-	/*
+	std::cout << __FUNCTION__ << '\n';
+	auto fst = tree.fst_child(); //B
+	auto snd = tree.snd_child(); //A
 	tree = ast::tree('&').add_two('|', '|');
-	tree.fst_child().add_child('!');
+	tree.fst_child().add_two('!', snd);
 	tree.fst_child().fst_child().add_child(fst);
-	tree.fst_child().add_child(snd);
-	tree.snd_child().add_child(fst);
-	tree.snd_child().add_child('!');
+	tree.snd_child().add_two(fst, '!');
 	tree.snd_child().snd_child().add_child(snd);
-	*/
+	/*
 	tree = ast::tree('|').add_two('&', '&');
 	tree.fst_child().add_two('!', '!');
 	tree.fst_child().fst_child().add_child(fst);
 	tree.fst_child().snd_child().add_child(snd);
 	tree.snd_child().add_two(fst, snd);
+	*/
 	return tree;
 }
 
@@ -70,6 +73,7 @@ const ast::tree deMorgans1Pattern()
 
 ast::tree& rewriteDeMorgans1(ast::tree& tree)
 {
+	std::cout << __FUNCTION__ << '\n';
 	auto fst = tree.fst_child().fst_child();
 	auto snd = tree.fst_child().snd_child();
 	tree = ast::tree('&').add_two('!', '!');
@@ -88,6 +92,7 @@ const ast::tree deMorgans2Pattern()
 
 ast::tree& rewriteDeMorgans2(ast::tree& tree)
 {
+	std::cout << __FUNCTION__ << '\n';
 	auto fst = tree.fst_child().fst_child();
 	auto snd = tree.fst_child().snd_child();
 	tree = ast::tree('|').add_two('!', '!');
@@ -104,8 +109,9 @@ const ast::tree distributivity1_in()
 	return pattern;
 }
 
-ast::tree& rewriteDistributivity1_in(ast::tree& tree)
+ast::tree& rewriteDistr1_in(ast::tree& tree)
 {
+	std::cout << __FUNCTION__ << '\n';
 	auto a = tree.snd_child().snd_child();
 	auto b = tree.snd_child().fst_child();
 	auto c = tree.fst_child();
@@ -124,8 +130,9 @@ const ast::tree distributivity1_out()
 	return pattern;
 }
 
-ast::tree& rewriteDistributivity1_out(ast::tree& tree)
+ast::tree& rewriteDistr1_out(ast::tree& tree)
 {
+	std::cout << __FUNCTION__ << '\n';
 	auto a = tree.snd_child().fst_child();
 	auto b = tree.fst_child().fst_child();
 	auto c = tree.fst_child().snd_child();
@@ -142,8 +149,9 @@ const ast::tree distributivity2_in()
 	return pattern;
 }
 
-ast::tree& rewriteDistributivity2_in(ast::tree& tree)
+ast::tree& rewriteDistr2_in(ast::tree& tree)
 {
+	std::cout << __FUNCTION__ << '\n';
 	auto a = tree.snd_child().snd_child();
 	auto b = tree.snd_child().fst_child();
 	auto c = tree.fst_child();
@@ -162,8 +170,9 @@ const ast::tree distributivity2_out()
 	return pattern;
 }
 
-ast::tree& rewriteDistributivity2_out(ast::tree& tree)
+ast::tree& rewriteDistr2_out(ast::tree& tree)
 {
+	std::cout << __FUNCTION__ << '\n';
 	auto a = tree.snd_child().fst_child();
 	auto b = tree.fst_child().fst_child();
 	auto c = tree.fst_child().snd_child();

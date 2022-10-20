@@ -21,9 +21,14 @@ struct tree : public std::vector<tree>
 	tree() = default;
 	tree(int value) : value(value) {}
 
-	tree& add_child(tree& other);
+	template <class Node>
+	tree& add_child(Node n)
+	{
+		emplace_back(std::forward<Node>(n));
+		return *this;
+	}
 
-	tree& add_child(int value);
+	// tree& add_child(int value);
 	// tree& add_two(int v1, int v2);
 	// tree& add_two(tree& fst, tree& snd);
 	template <class NodeA, class NodeB>

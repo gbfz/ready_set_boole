@@ -6,6 +6,7 @@
  * Double negation:		A!!		≡	A
  * Implication:			AB>		≡	A!B|
  * Equivalence:			AB=		≡	AB&A!B!&|
+ // * Inequivalence:       AB=!    ≡	AB!&A!B&|
  * De Morgan's I:		AB|!	≡	A!B!&
  * De Morgan's II:		AB&! 	≡	A!B!|
  * Distributivity I:	AB|C&	≡	CA&CB&|
@@ -23,6 +24,9 @@ namespace pattern {
 	const ast::tree equivalencePattern();
 	ast::tree& rewriteEquivalence(ast::tree& tree);
 
+	const ast::tree inequivalencePattern();
+	ast::tree& rewriteInequivalence(ast::tree&);
+
 	const ast::tree deMorgans1Pattern();
 	ast::tree& rewriteDeMorgans1(ast::tree& tree);
 
@@ -30,14 +34,14 @@ namespace pattern {
 	ast::tree& rewriteDeMorgans2(ast::tree& tree);
 
 	const ast::tree distributivity1_in();
-	ast::tree& rewriteDistributivity1_in(ast::tree& tree);
+	ast::tree& rewriteDistr1_in(ast::tree& tree);
 
 	const ast::tree distributivity1_out();
-	ast::tree& rewriteDistributivity1_out(ast::tree& tree);
+	ast::tree& rewriteDistr1_out(ast::tree& tree);
 
 	const ast::tree distributivity2_in();
-	ast::tree& rewriteDistributivity2_in(ast::tree& tree);
+	ast::tree& rewriteDistr2_in(ast::tree& tree);
 
 	const ast::tree distributivity2_out();
-	ast::tree& rewriteDistributivity2_out(ast::tree& tree);
+	ast::tree& rewriteDistr2_out(ast::tree& tree);
 }
