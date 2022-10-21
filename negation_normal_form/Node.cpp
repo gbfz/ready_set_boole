@@ -2,6 +2,20 @@
 
 namespace ast {
 
+tree::tree(int value) : value(value) {}
+
+tree::tree(const tree& other) : value(other.value)
+{
+	assign(other.begin(), other.end());
+}
+
+tree& tree::operator= (const tree& other)
+{
+	value = other.value;
+	assign(other.begin(), other.end());
+	return *this;
+}
+
 tree& tree::fst_child() { return front(); }
 const tree& tree::fst_child() const { return front(); }
 
@@ -62,6 +76,24 @@ void tree::printValue(const std::string& pref, char value, bool isRight)
 	std::cout << pref
 			  << (isRight ? "⦧ " : "⦦ " )
 			  << chooseColor() << '\'' << char(value) << '\'' << resetColor() << '\n';
+}
+
+void printTree(const std::string& pref, const tree& node, bool isRight)
+{
+	switch (node.size())
+	{
+		case 0: return tree::printValue(pref, node.value, isRight);
+		case 1: tree::printValue(pref, node.value, isRight);
+				return printTree(pref + (isRight ? "ᐧ  " : "   "), node.fst_child(), false);
+		case 2: printTree(pref + (isRight ? "   " : "ᐧ  "), node.fst_child(), true);
+				tree::printValue(pref, node.value, isRight);
+				printTree(pref + (isRight ? "ᐧ  " : "   "), node.snd_child(), false);
+	}
+}
+
+void printTree(const tree& node)
+{
+	printTree("", node, false);
 }
 
 } // namespace ast

@@ -20,12 +20,12 @@ ast::tree generateTree(std::string& s, ast::tree& node)
 {
 	if (is_operand(node.value))
 		return node;
-	node.add_child(s.back());
+	node.add_one(s.back());
 	s.pop_back();
 	generateTree(s, node.fst_child());
 	if (is_binop(node.value))
 	{
-		node.add_child(s.back());
+		node.add_one(s.back());
 		s.pop_back();
 		generateTree(s, node.snd_child());
 	}
