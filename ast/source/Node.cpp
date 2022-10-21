@@ -4,7 +4,7 @@ namespace ast {
 
 tree::tree(int value) : value(value) {}
 
-tree::tree(const tree& other) : value(other.value)
+tree::tree(const tree& other) : std::vector<tree>(), value(other.value)
 {
 	assign(other.begin(), other.end());
 }

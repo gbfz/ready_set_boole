@@ -1,3 +1,0 @@
-/home/mgold/school/ready_set_boole/ast/build/CMakeFiles/makeAst.dir
-/home/mgold/school/ready_set_boole/ast/build/CMakeFiles/edit_cache.dir
-/home/mgold/school/ready_set_boole/ast/build/CMakeFiles/rebuild_cache.dir

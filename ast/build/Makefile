@@ -117,24 +117,24 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named makeAst
+# Target rules for targets named postfixAst
 
 # Build rule for target.
-makeAst: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 makeAst
-.PHONY : makeAst
+postfixAst: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 postfixAst
+.PHONY : postfixAst
 
 # fast build rule for target.
-makeAst/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/makeAst.dir/build.make CMakeFiles/makeAst.dir/build
-.PHONY : makeAst/fast
+postfixAst/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/postfixAst.dir/build.make CMakeFiles/postfixAst.dir/build
+.PHONY : postfixAst/fast
 
 Node.o: Node.cpp.o
 .PHONY : Node.o
 
 # target to build an object file
 Node.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/makeAst.dir/build.make CMakeFiles/makeAst.dir/Node.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/postfixAst.dir/build.make CMakeFiles/postfixAst.dir/Node.cpp.o
 .PHONY : Node.cpp.o
 
 Node.i: Node.cpp.i
@@ -142,7 +142,7 @@ Node.i: Node.cpp.i
 
 # target to preprocess a source file
 Node.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/makeAst.dir/build.make CMakeFiles/makeAst.dir/Node.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/postfixAst.dir/build.make CMakeFiles/postfixAst.dir/Node.cpp.i
 .PHONY : Node.cpp.i
 
 Node.s: Node.cpp.s
@@ -150,7 +150,7 @@ Node.s: Node.cpp.s
 
 # target to generate assembly for a file
 Node.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/makeAst.dir/build.make CMakeFiles/makeAst.dir/Node.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/postfixAst.dir/build.make CMakeFiles/postfixAst.dir/Node.cpp.s
 .PHONY : Node.cpp.s
 
 Parser.o: Parser.cpp.o
@@ -158,7 +158,7 @@ Parser.o: Parser.cpp.o
 
 # target to build an object file
 Parser.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/makeAst.dir/build.make CMakeFiles/makeAst.dir/Parser.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/postfixAst.dir/build.make CMakeFiles/postfixAst.dir/Parser.cpp.o
 .PHONY : Parser.cpp.o
 
 Parser.i: Parser.cpp.i
@@ -166,7 +166,7 @@ Parser.i: Parser.cpp.i
 
 # target to preprocess a source file
 Parser.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/makeAst.dir/build.make CMakeFiles/makeAst.dir/Parser.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/postfixAst.dir/build.make CMakeFiles/postfixAst.dir/Parser.cpp.i
 .PHONY : Parser.cpp.i
 
 Parser.s: Parser.cpp.s
@@ -174,32 +174,8 @@ Parser.s: Parser.cpp.s
 
 # target to generate assembly for a file
 Parser.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/makeAst.dir/build.make CMakeFiles/makeAst.dir/Parser.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/postfixAst.dir/build.make CMakeFiles/postfixAst.dir/Parser.cpp.s
 .PHONY : Parser.cpp.s
-
-test.o: test.cpp.o
-.PHONY : test.o
-
-# target to build an object file
-test.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/makeAst.dir/build.make CMakeFiles/makeAst.dir/test.cpp.o
-.PHONY : test.cpp.o
-
-test.i: test.cpp.i
-.PHONY : test.i
-
-# target to preprocess a source file
-test.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/makeAst.dir/build.make CMakeFiles/makeAst.dir/test.cpp.i
-.PHONY : test.cpp.i
-
-test.s: test.cpp.s
-.PHONY : test.s
-
-# target to generate assembly for a file
-test.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/makeAst.dir/build.make CMakeFiles/makeAst.dir/test.cpp.s
-.PHONY : test.cpp.s
 
 # Help Target
 help:
@@ -209,16 +185,13 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... makeAst"
+	@echo "... postfixAst"
 	@echo "... Node.o"
 	@echo "... Node.i"
 	@echo "... Node.s"
 	@echo "... Parser.o"
 	@echo "... Parser.i"
 	@echo "... Parser.s"
-	@echo "... test.o"
-	@echo "... test.i"
-	@echo "... test.s"
 .PHONY : help
 
 
