@@ -1,67 +1,53 @@
 #pragma once
 #include <vector>
-#include <string>
 #include <optional>
 #include <iostream>
 
-namespace AST
+namespace ast
 {
 
 bool validate(const std::string& s);
-std::optional<struct Node> generateTree(std::string s);
+std::optional<struct tree> generateTree(std::string s);
+std::string treeToString(const ast::tree& tree, std::string acc = "");
 
-struct Node : protected std::vector<Node>
+static constexpr char placeholder = '\0';
+
+struct tree : public std::vector<tree>
 {
 	int value;
 
-	Node(int value) : value(value) {}
+	tree() = default;
+	tree(int value);
+	tree(const tree& other);
+	tree& operator= (const tree& other);
+	friend bool operator== (const tree& lhs, const tree& rhs);
 
-	void add_child(int value);
+	template <class Node>
+	tree& add_one(Node n)
+	{
+		emplace_back(std::forward<Node>(n));
+		return *this;
+	}
 
-	Node& fst_child();
-	const Node& fst_child() const;
+	template <class NodeA, class NodeB>
+	tree& add_two(NodeA fst, NodeB snd)
+	{
+		emplace_back(std::forward<NodeA>(fst));
+		emplace_back(std::forward<NodeB>(snd));
+		return *this;
+	}
 
-	Node& snd_child();
-	const Node& snd_child() const;
+	tree& fst_child();
+	const tree& fst_child() const;
+
+	tree& snd_child();
+	const tree& snd_child() const;
 
 	bool exec() const;
 
-	/*
-	friend void printTree(const std::string& pref, const Node& node, bool isRight = false)
-	{
-		switch (node.size())
-		{
-			case 0: return printValue(pref, node.value, isRight);
-			case 1: printValue(pref, node.value, isRight);
-					return printTree(pref + (isRight ? "ᐧ  " : "   "), node.fst_child(), false);
-			case 2: printTree(pref + (isRight ? "   " : "ᐧ  "), node.fst_child(), true);
-					printValue(pref, node.value, isRight);
-					printTree(pref + (isRight ? "ᐧ  " : "   "), node.snd_child(), false);
-		}
-	}
-
-	friend void printTree(const Node& node)
-	{
-		printTree("", node);
-	}
-	*/
-
-	friend void printTree(const Node& node, int tab = 0) 
-	{
-		switch (node.size())
-		{
-			case 0: return printValue(tab, node.value);
-			case 1: printValue(tab, node.value);
-					return printTree(node.fst_child(), tab + 2);
-			case 2: printTree(node.fst_child(), tab + 2);
-					printValue(tab, node.value);
-					return printTree(node.snd_child(), tab + 2);
-		}
-	}
-
-private:
-	// static void printValue(const std::string& prefix, char value, bool isRight);
-	static void printValue(int tab, char value);
+	friend void printTree(const std::string& pref, const tree& node, bool isRight);
+	friend void printTree(const tree& node);
+	static void printValue(const std::string& prefix, char value, bool isRight);
 };
 
-} // namespace AST
+} // namespace ast

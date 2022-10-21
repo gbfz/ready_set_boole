@@ -1,7 +1,7 @@
 #include "ASTree.hpp"
 #include <bits/utility.h>
 
-namespace AST::detail {
+namespace ast::detail {
 
 bool is_binop(char c)
 {
@@ -16,31 +16,31 @@ bool is_operand(char c)
 	return std::isalnum(c);
 }
 
-AST::Node generateTree(std::string& s, AST::Node& node)
+ast::tree generateTree(std::string& s, ast::tree& node)
 {
 	if (is_operand(node.value))
 		return node;
-	node.add_child(s.back());
+	node.add_one(s.back());
 	s.pop_back();
 	generateTree(s, node.fst_child());
 	if (is_binop(node.value))
 	{
-		node.add_child(s.back());
+		node.add_one(s.back());
 		s.pop_back();
 		generateTree(s, node.snd_child());
 	}
 	return node;
 }
 
-} // namespace ASTParser::detail
+} // namespace astParser::detail
 
-namespace AST {
+namespace ast {
 
-std::optional<Node> generateTree(std::string s)
+std::optional<tree> generateTree(std::string s)
 {
 	if (!validate(s))
 		return {};
-	AST::Node root(s.back());
+	ast::tree root(s.back());
 	s.pop_back();
 	return detail::generateTree(s, root);
 }
@@ -60,4 +60,4 @@ bool validate(const std::string& s)
 	return sz == 1;
 }
 
-} // namespace ASTParser
+} // namespace astParser
