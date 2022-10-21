@@ -1,5 +1,5 @@
 #pragma once
-#include "ASTree.hpp"
+#include "../ast/source/ASTree.hpp"
 #include "Pattern.hpp"
 
 namespace nnf {
@@ -11,10 +11,9 @@ namespace nnf {
 
 		using funcT = decltype(&pattern::rewriteDoubleNegation);
 		using PatternActionMap = std::vector<std::pair<ast::tree, funcT>>;
-		const PatternActionMap& getPatternActionMap();
 
+		const PatternActionMap& getPatternActionMap();
 	}
 
 	std::string negation_normal_form(std::string const& s);
-
 }
