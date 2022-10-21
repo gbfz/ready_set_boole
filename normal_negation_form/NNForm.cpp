@@ -1,10 +1,21 @@
 #include "NNForm.hpp"
 
-ast::tree& nnf::detail::rewrite(ast::tree& tree)
+namespace nnf {
+
+/* About generateTree and rewritePattern:
+ *
+ * If the node has one child - meaning its value is '!' -
+ * I rewrite the node's child and then go back to handle rewritePattern on the current node.
+ * The child's transformation can create a pattern with '!' at the start,
+ * so to check that I call the rewriting procedure on the '!' node before going deeper into the tree.
+ *
+ * In case of a binary node the check is only done after handling the children nodes.
+ */
+
+const detail::PatternActionMap& detail::getPatternActionMap()
 {
 	using namespace nnf::pattern;
-	using funcT = decltype(&rewriteDoubleNegation);
-	static const std::vector<std::pair<ast::tree, funcT>> map =
+	static const PatternActionMap map =
 	{
 		{ implicationPattern(),		rewriteImplication		},
 		{ equivalencePattern(),		rewriteEquivalence		},
@@ -12,57 +23,49 @@ ast::tree& nnf::detail::rewrite(ast::tree& tree)
 		{ deMorgans2Pattern(),		rewriteDeMorgans2		},
 		{ doubleNegationPattern(),	rewriteDoubleNegation	},
 	};
-	for (const auto& [pattern, functor] : map)
+	return map;
+}
+
+ast::tree& detail::rewritePattern(ast::tree& tree)
+{
+	for (auto const& [pattern, functor] : getPatternActionMap())
 	{
 		if (tree == pattern)
 		{
 			if (tree.value == '!')
-				return negation_normal_form(functor(tree));
+				return generateTree(functor(tree));
 			return functor(tree);
 		}
 	}
 	return tree;
 }
 
-ast::tree& nnf::detail::negation_normal_form(ast::tree& tree)
+ast::tree& detail::generateTree(ast::tree& node)
 {
-	tree = rewrite(tree);
-	switch (tree.size())
+	if (node.empty())
+		return node;
+	rewritePattern(node);
+	switch (node.size())
 	{
-		case 0: return tree;
-		case 1: rewrite(tree.fst_child());
+		case 1: rewritePattern(node.fst_child());
 				break;
-		case 2: negation_normal_form(tree.fst_child());
-				negation_normal_form(tree.snd_child());
+		case 2: generateTree(node.fst_child());
+				generateTree(node.snd_child());
 				break;
 	}
-	return rewrite(tree);
+	return rewritePattern(node);
 }
 
-std::string nnf::negation_normal_form(const std::string& s)
+std::string negation_normal_form(const std::string& s)
 {
 	auto maybeTree = ast::generateTree(s);
 	if (!maybeTree)
-		return "Invalid formula: " + s;
-	auto nnfTree = detail::negation_normal_form(*maybeTree);
+	{
+		std::cerr << "Invalid formula: " << s << '\n';
+		return "";
+	}
+	auto nnfTree = nnf::detail::generateTree(*maybeTree);
 	return ast::treeToString(nnfTree);
 }
 
-void testNNF(const std::string& s)
-{
-	std::cout << "Transforming: " << s << '\n';
-	auto n = nnf::negation_normal_form(s);
-	std::cout << "Transformed : " << n << '\n';
-	// std::cout << std::boolalpha << ast::generateTree(n).value().exec() << '\n';
-}
-
-int main()
-{
-	// testNNF("AB|C&!");
-	// testNNF("AB|C=");
-	// testNNF("AB|C>");
-	// testNNF("AB&!");
-	// testNNF("AB!|C&!");
-	testNNF("AB|C&D=X>"); // AB|C&D!&A!B!&C!|D&|X|
-	// testNNF("11|1&1=1>");
-}
+} // namespace nnf

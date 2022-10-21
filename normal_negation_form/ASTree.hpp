@@ -1,9 +1,6 @@
 #pragma once
-#include <type_traits>
 #include <vector>
-#include <string>
 #include <optional>
-#include <utility>
 #include <iostream>
 
 namespace ast
@@ -20,22 +17,15 @@ struct tree : public std::vector<tree>
 	int value;
 
 	tree() = default;
-	tree(int value) : value(value) {}
-
-	tree(const tree& other) : value(other.value)
-	{ assign(other.begin(), other.end()); }
+	tree(int value);
+	tree(const tree& other);
+	tree& operator= (const tree& other);
+	friend bool operator== (const tree& lhs, const tree& rhs);
 
 	template <class Node>
-	tree& add_child(Node n)
+	tree& add_one(Node n)
 	{
 		emplace_back(std::forward<Node>(n));
-		return *this;
-	}
-
-	tree& operator= (const tree& other)
-	{
-		value = other.value;
-		assign(other.begin(), other.end());
 		return *this;
 	}
 
@@ -55,47 +45,9 @@ struct tree : public std::vector<tree>
 
 	bool exec() const;
 
-	// tree& operator= (const tree& other);
-
-	friend bool operator== (const tree& lhs, const tree& rhs);
-	friend struct std::hash<ast::tree>;
-
-	friend void printTree(const std::string& pref, const tree& node, bool isRight = false)
-	{
-		switch (node.size())
-		{
-			case 0: return printValue(pref, node.value, isRight);
-			case 1: printValue(pref, node.value, isRight);
-					return printTree(pref + (isRight ? "ᐧ  " : "   "), node.fst_child(), false);
-			case 2: printTree(pref + (isRight ? "   " : "ᐧ  "), node.fst_child(), true);
-					printValue(pref, node.value, isRight);
-					printTree(pref + (isRight ? "ᐧ  " : "   "), node.snd_child(), false);
-		}
-	}
-
-	friend void printTree(const tree& node)
-	{
-		printTree("", node);
-	}
-
-	/*
-	friend void printTree(const tree& node, int tab = 0) 
-	{
-		switch (node.size())
-		{
-			case 0: return printValue(tab, node.value);
-			case 1: printValue(tab, node.value);
-					return printTree(node.fst_child(), tab + 2);
-			case 2: printTree(node.fst_child(), tab + 2);
-					printValue(tab, node.value);
-					return printTree(node.snd_child(), tab + 2);
-		}
-	}
-	*/
-
-private:
+	friend void printTree(const std::string& pref, const tree& node, bool isRight);
+	friend void printTree(const tree& node);
 	static void printValue(const std::string& prefix, char value, bool isRight);
-	// static void printValue(int tab, char value);
 };
 
 } // namespace ast
