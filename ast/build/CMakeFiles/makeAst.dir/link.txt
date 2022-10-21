@@ -1,1 +1,0 @@
-/usr/bin/c++ -rdynamic CMakeFiles/makeAst.dir/Node.cpp.o CMakeFiles/makeAst.dir/Parser.cpp.o CMakeFiles/makeAst.dir/test.cpp.o -o makeAst 
