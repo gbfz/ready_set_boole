@@ -49,6 +49,7 @@ int main()
 	// testNNF("AB&!");
 	// testNNF("AB!|C&!");
 	// testNNF("AB|C&D=X>"); // AB|C&D!&A!B!&C!|D&|X|
-	testNNF("11|1&1=1>", true);
+	testNNF("11|1&0=1>"); // AB|C&D!&A!B!&C!|D&|X|
+	// testNNF("11|1&1=1>", true);
 	// testNNF("ABOBA");
 }

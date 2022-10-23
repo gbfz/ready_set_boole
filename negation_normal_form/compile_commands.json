@@ -1,0 +1,27 @@
+[
+{
+  "directory": "/home/mgold/school/ready_set_boole/truth_table",
+  "command": "/usr/bin/c++   -O2 -Wall -Wextra -Werror -std=c++20 -std=gnu++20 -o CMakeFiles/makeAst.dir/Node.cpp.o -c /home/mgold/school/ready_set_boole/ast/source/Node.cpp",
+  "file": "/home/mgold/school/ready_set_boole/truth_table/RpnEvalutator.cpp"
+},
+{
+  "directory": "/home/mgold/school/ready_set_boole/boolean_evaluation",
+  "command": "/usr/bin/c++   -O2 -Wall -Wextra -Werror -std=c++20 -std=gnu++20 -o CMakeFiles/makeAst.dir/Node.cpp.o -c /home/mgold/school/ready_set_boole/ast/source/Node.cpp",
+  "file": "/home/mgold/school/ready_set_boole/boolean_evaluation/boolean_evaluation.cpp"
+},
+{
+  "directory": "/home/mgold/school/ready_set_boole/ast/build",
+  "command": "/usr/bin/c++   -O2 -Wall -Wextra -Werror -std=c++20 -std=gnu++20 -o CMakeFiles/makeAst.dir/Node.cpp.o -c /home/mgold/school/ready_set_boole/ast/source/Node.cpp",
+  "file": "/home/mgold/school/ready_set_boole/ast/source/Node.cpp"
+},
+{
+  "directory": "/home/mgold/school/ready_set_boole/ast/build",
+  "command": "/usr/bin/c++   -O2 -Wall -Wextra -Werror -std=c++20 -std=gnu++20 -o CMakeFiles/makeAst.dir/Parser.cpp.o -c /home/mgold/school/ready_set_boole/ast/source/Parser.cpp",
+  "file": "/home/mgold/school/ready_set_boole/ast/source/Parser.cpp"
+},
+{
+  "directory": "/home/mgold/school/ready_set_boole/ast/build",
+  "command": "/usr/bin/c++   -O2 -Wall -Wextra -Werror -std=c++20 -std=gnu++20 -o CMakeFiles/makeAst.dir/test.cpp.o -c /home/mgold/school/ready_set_boole/ast/source/test.cpp",
+  "file": "/home/mgold/school/ready_set_boole/ast/source/test.cpp"
+}
+]

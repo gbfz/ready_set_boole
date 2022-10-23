@@ -10,9 +10,9 @@ namespace nnf {
 		ast::tree& rewritePattern(ast::tree& tree);
 
 		using funcT = decltype(&pattern::rewriteDoubleNegation);
-		using PatternActionMap = std::vector<std::pair<ast::tree, funcT>>;
+		using PatternRewriteMap = std::vector<std::pair<ast::tree, funcT>>;
 
-		const PatternActionMap& getPatternActionMap();
+		const PatternRewriteMap& getPatternRewriteMap();
 	}
 
 	std::string negation_normal_form(std::string const& s);

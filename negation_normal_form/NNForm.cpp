@@ -12,10 +12,10 @@ namespace nnf {
  * In case of a binary node the check is only done after handling the children nodes.
  */
 
-const detail::PatternActionMap& detail::getPatternActionMap()
+const detail::PatternRewriteMap& detail::getPatternRewriteMap()
 {
 	using namespace nnf::pattern;
-	static const PatternActionMap map =
+	static const PatternRewriteMap map =
 	{
 		{ implicationPattern(),		rewriteImplication		},
 		{ equivalencePattern(),		rewriteEquivalence		},
@@ -28,13 +28,13 @@ const detail::PatternActionMap& detail::getPatternActionMap()
 
 ast::tree& detail::rewritePattern(ast::tree& tree)
 {
-	for (auto const& [pattern, functor] : getPatternActionMap())
+	for (const auto& [pattern, rewrite] : getPatternRewriteMap())
 	{
 		if (tree == pattern)
 		{
 			if (tree.value == '!')
-				return generateTree(functor(tree));
-			return functor(tree);
+				return generateTree(rewrite(tree));
+			return rewrite(tree);
 		}
 	}
 	return tree;
@@ -45,14 +45,10 @@ ast::tree& detail::generateTree(ast::tree& node)
 	if (node.empty())
 		return node;
 	rewritePattern(node);
-	switch (node.size())
-	{
-		case 1: rewritePattern(node.fst_child());
-				break;
-		case 2: generateTree(node.fst_child());
-				generateTree(node.snd_child());
-				break;
-	}
+	if (node.size() >= 1)
+		generateTree(node.fst_child());
+	if (node.size() == 2)
+		generateTree(node.snd_child());
 	return rewritePattern(node);
 }
 
