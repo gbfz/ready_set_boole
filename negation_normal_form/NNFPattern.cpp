@@ -1,4 +1,4 @@
-#include "Pattern.hpp"
+#include "NNFPattern.hpp"
 
 namespace nnf::pattern {
 
