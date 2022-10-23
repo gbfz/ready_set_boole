@@ -1,5 +1,4 @@
 #pragma once
-#include "../ast/source/ASTree.hpp"
 #include "Pattern.hpp"
 
 namespace nnf {
