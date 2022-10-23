@@ -1,6 +1,6 @@
 #pragma once
 #include "../ast/source/ASTree.hpp"
-#include "Pattern.hpp"
+#include "NNFPattern.hpp"
 
 namespace nnf {
 
