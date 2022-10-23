@@ -3,7 +3,7 @@
 
 bool eval_formula(const std::string& formula)
 {
-	std::optional<AST::Node> maybeTree = AST::generateTree(formula);
+	std::optional<ast::tree> maybeTree = ast::generateTree(formula);
 	if (!maybeTree)
 	{
 		std::cerr << "Invalid formula: " << formula << '\n';
@@ -18,7 +18,7 @@ bool eval_formula(const std::string& formula)
 void test(const std::string& formula, std::optional<bool> expected = std::nullopt)
 {
 	using namespace std;
-	auto maybeRoot = AST::generateTree(formula);
+	auto maybeRoot = ast::generateTree(formula);
 	if (!maybeRoot)
 	{
 		cerr << "Invalid formula " << quoted(formula) << '\n';
@@ -45,10 +45,11 @@ int main()
 	// test("1!0!|", true);
 	// test("1!0!0&|", false);
 	// test("10!^0&", false);
-	test("1!!01!1!||^!1=");//, true);
-	test("1!!0|1!1!|^!1=");//, true);
+	// test("1!!01!1!||^!1=");//, true);
+	// test("1!!0|1!1!|^!1=");//, true);
 	// test("1!!00!1!||&1|1|1=0!!^");//, true);
-	test("1!!00!1!||&1|1|1=0!!^11||");//, true);
+	// test("1!!00!1!||&1|1|1=0!!^11||");//, true);
+	test("AB^C^D&A=B>");
 	// test("1!!1^!", true);
 	// test("aboba");
 	// test("01||");
