@@ -1,11 +1,11 @@
-#include "Pattern.hpp"
+#include "CNFPattern.hpp"
 
 namespace cnf::pattern {
 
 // Distributivity 1 | conOverDis: AB|C& ≡ AB|AC|&
 // Distributivity 2 | disOverCon: AB&C| ≡ AB&AC&|
 
-const ast::tree disOverCon()
+const ast::tree disOverConPattern()
 {
 	ast::tree pattern('|');
 	pattern.add_two(ast::placeholder, '&');

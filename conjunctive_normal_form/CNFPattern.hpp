@@ -1,7 +1,7 @@
 #pragma once
-#include "../ast/source/ASTree.hpp"
+#include "ASTree.hpp"
 
 namespace cnf::pattern {
-	const ast::tree disOverCon(); // p | (q & r) -> (p | q) & (p | r)
+	const ast::tree disOverConPattern();
 	ast::tree& rewriteDisOverCon(ast::tree& tree);
 }
