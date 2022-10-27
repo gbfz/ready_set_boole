@@ -2,8 +2,9 @@
 
 namespace cnf::pattern {
 
-// AB&C| ≡ CA|CB|&
+// AB&C|  ⇔  CA|CB|&
 
+// doc  ⇔  disjunction over conjunction
 const ast::tree docPatternR()
 {
 	ast::tree pattern('|');
