@@ -1,5 +1,5 @@
 #pragma once
-#include "ASTree.hpp"
+#include "../ast/source/ASTree.hpp"
 #include <map>
 #include <set>
 #include <iostream>
