@@ -23,14 +23,14 @@ struct tree : public std::vector<tree>
 	friend bool operator== (const tree& lhs, const tree& rhs);
 
 	template <class Node>
-	tree& add_one(Node n)
+	tree& add_one(Node&& n)
 	{
 		emplace_back(std::forward<Node>(n));
 		return *this;
 	}
 
 	template <class NodeA, class NodeB>
-	tree& add_two(NodeA fst, NodeB snd)
+	tree& add_two(NodeA&& fst, NodeB&& snd)
 	{
 		emplace_back(std::forward<NodeA>(fst));
 		emplace_back(std::forward<NodeB>(snd));
