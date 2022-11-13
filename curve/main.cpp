@@ -1,20 +1,21 @@
 #include "map.hpp"
+#include "libmorton/include/libmorton/morton.h"
 #include <iostream>
+#include <cassert>
 
-/* pip install zCurve
- *
- * import zCurve as z
- * def get_zcode(x, y):
- *     return z.interlace(x, y, dims = 2, bits_per_bit = 16) / 4294977295
- */
+void test(uint16_t x, uint16_t y)
+{
+	double z = map(x, y);
+	double libz = libmorton::morton2D_32_encode(x, y);
+
+	libz /= std::numeric_limits<uint32_t>::max();
+	std::cout << "Actual  : " << z << '\n';
+	std::cout << "Expected: " << libz << '\n';
+	assert(z == libz);
+}
 
 int main()
 {
-	auto test = [](auto x, auto y)
-	{
-		std::cout << "x: " << x << "\ny: " << y << '\n';
-		std::cout << "z: " << map(x, y) << "\n\n";
-	};
 	test(0, 0);
 	test(16, 42);
 	test(100, 100);
