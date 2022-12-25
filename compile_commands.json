@@ -1,0 +1,27 @@
+[
+{
+  "directory": "/home/mgold/school/ready_set_boole/inverse_function",
+  "command": "/usr/bin/c++   -O2 -Wall -Wextra -Werror -std=c++20 -std=gnu++20 /home/mgold/school/ready_set_boole/inverse_function/reverse_map.cpp",
+  "file": "/home/mgold/school/ready_set_boole/inverse_function/reverse_map.cpp"
+}
+{
+  "directory": "/home/mgold/school/ready_set_boole/curve",
+  "command": "/usr/bin/c++   -O2 -Wall -Wextra -Werror -std=c++20 -std=gnu++20 /home/mgold/school/ready_set_boole/curve/map.cpp",
+  "file": "/home/mgold/school/ready_set_boole/curve/map.cpp"
+}
+{
+  "directory": "/home/mgold/school/ready_set_boole/set_evaluation",
+  "command": "/usr/bin/c++   -O2 -Wall -Wextra -Werror -std=c++20 -std=gnu++20 /home/mgold/school/ready_set_boole/set_evaluation/set.cpp",
+  "file": "/home/mgold/school/ready_set_boole/set_evaluation/set.cpp"
+}
+{
+  "directory": "/home/mgold/school/ready_set_boole/sat",
+  "command": "/usr/bin/c++   -O2 -Wall -Wextra -Werror -std=c++20 -std=gnu++20 /home/mgold/school/ready_set_boole/sat/sat.cpp",
+  "file": "/home/mgold/school/ready_set_boole/sat/sat.cpp"
+}
+{
+  "directory": "/home/mgold/school/ready_set_boole/truth_table",
+  "command": "/usr/bin/c++   -O2 -Wall -Wextra -Werror -std=c++20 -std=gnu++20 /home/mgold/school/ready_set_boole/truth_table/TTLogic.cpp",
+  "file": "/home/mgold/school/ready_set_boole/truth_table/TTLogic.cpp"
+}
+]

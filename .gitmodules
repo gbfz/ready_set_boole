@@ -1,3 +1,7 @@
+[submodule "inverse_function/libmorton"]
+	path = inverse_function/libmorton
+	url = git@github.com:Forceflow/libmorton.git
+
 [submodule "curve/libmorton"]
 	path = curve/libmorton
 	url = git@github.com:Forceflow/libmorton.git
