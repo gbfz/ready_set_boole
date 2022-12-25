@@ -1,4 +1,4 @@
-#include "../ast/source/ASTree.hpp"
+#include "ASTree.hpp"
 
 bool eval_formula(const std::string& formula)
 {
