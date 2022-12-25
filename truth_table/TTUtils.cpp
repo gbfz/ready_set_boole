@@ -1,8 +1,11 @@
 #include "TT.hpp"
 
-void TT::setFormula(const std::string& s)
+bool TT::setFormula(const std::string& s)
 {
+	if (!ast::validate(s))
+		return false;
 	formula = s;
+	return true;
 }
 
 size_t TT::power2N(size_t n)

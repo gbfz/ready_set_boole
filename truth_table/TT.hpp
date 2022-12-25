@@ -1,5 +1,5 @@
 #pragma once
-#include "ASTree.hpp"
+#include "../ast/source/ASTree.hpp"
 #include <map>
 #include <set>
 #include <iostream>
@@ -11,7 +11,7 @@ public:
 
 	void generateTable();
 
-	void setFormula(const std::string& s);
+	bool setFormula(const std::string& s);
 
 	bool operator[](std::pair<char, int> p) const;
 	bool at(std::pair<char, int> p) const;
