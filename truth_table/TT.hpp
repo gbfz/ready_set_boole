@@ -1,29 +1,17 @@
 #pragma once
 #include "../ast/source/ASTree.hpp"
 #include <map>
-#include <set>
-#include <iostream>
 
 class TT
 {
 public:
 	using Table = std::map<std::pair<char, int>, int>;
 
-	void generateTable();
-
-	bool setFormula(const std::string& s);
-
-	bool operator[](std::pair<char, int> p) const;
-	bool at(std::pair<char, int> p) const;
-
+	bool generateTable(const std::string& formula);
 	void printTable() const;
 
-	Table getTableCopy();
-	const Table& getTable() const;
-	const std::string& getFormula() const;
-	const std::string& getVariables() const;
-	size_t getColumnCount() const;
-	size_t getRowCount() const;
+	std::vector<int> getResults() const;
+	bool at(std::pair<char, int> p) const;
 
 private:
 	std::string		formula;

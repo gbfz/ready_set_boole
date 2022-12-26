@@ -14,5 +14,5 @@ namespace nnf {
 		const PatternRewriteMap& getPatternRewriteMap();
 	}
 
-	std::string negation_normal_form(std::string const& s);
+	std::string negation_normal_form(const std::string& s);
 }

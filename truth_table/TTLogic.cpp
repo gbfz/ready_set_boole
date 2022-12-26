@@ -1,12 +1,17 @@
 #include "TT.hpp"
+#include <set>
+#include <iostream>
 
-void TT::generateTable()
+bool TT::generateTable(const std::string& f)
 {
+	if (!ast::validate(f))
+		return false;
+	formula = f;
 	vars = getFormulaVariables();
 	colCount = vars.size();
 	rowCount = power2N(colCount);
 	fillTable();
-	addResults();
+	return true;
 }
 
 void TT::fillTable()
@@ -23,11 +28,12 @@ void TT::fillTable()
 		}
 		step /= 2;
 	}
+	addResults();
 }
 
 void TT::addResults()
 {
-	for (auto row = 0u; row < rowCount; ++row)
+	for (size_t row = 0; row < rowCount; ++row)
 	{
 		auto fml = createFormula(row);
 		auto tree = ast::generateTree(fml);
@@ -52,9 +58,29 @@ std::string TT::getFormulaVariables() const
 {
 	std::set<char> vars;
 	for (char c : formula)
-		if (std::isalpha(c) && !vars.contains(c))
+		if (std::isalpha(c))
 			vars.emplace(c);
 	return std::string(vars.begin(), vars.end());
+}
+
+size_t TT::power2N(size_t n)
+{
+	if (n == 0)
+		return 1;
+	return 2 << (n - 1);
+}
+
+std::vector<int> TT::getResults() const
+{
+	std::vector<int> rs;
+	for (size_t row = 0; row < rowCount; ++row)
+		rs.emplace_back(table.at({'=', row}));
+	return rs;
+}
+
+bool TT::at(std::pair<char, int> p) const
+{
+	return table.at(p);
 }
 
 void TT::printTable() const
@@ -71,14 +97,14 @@ void TT::printTableHeader(auto&& print) const
 	for (char v : vars)
 		print("| ", v, ' ');
 	print("| = |\n");
-	for (auto i = 0u; i < vars.size(); ++i)
+	for (size_t i = 0; i < vars.size(); ++i)
 		print("|---");
 	print("|---|\n");
 }
 
 void TT::printTableRows(auto&& print) const
 {
-	for (auto row = 0u; row < rowCount; ++row)
+	for (size_t row = 0; row < rowCount; ++row)
 	{
 		for (char c : vars)
 			print("| ", table.at({c, row}), ' ');
