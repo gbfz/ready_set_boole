@@ -12,33 +12,33 @@ bool is_operator(char c)
 		|| c == '>' || c == '=' || c == '!';
 }
 
-set operator& (const set& a, const set& b)
+Set operator& (const Set& a, const Set& b)
 {
-	set s;
+	Set s;
 	rng::set_intersection(a, b, std::inserter(s, s.end()));
 	return s;
 }
 
-set operator| (const set& a, const set& b)
+Set operator| (const Set& a, const Set& b)
 {
-	set s;
+	Set s;
 	rng::set_union(a, b, std::inserter(s, s.end()));
 	return s;
 }
 
-set operator^ (const set& a, const set& b)
+Set operator^ (const Set& a, const Set& b)
 {
-	set s;
+	Set s;
 	rng::set_symmetric_difference(a, b, std::inserter(s, s.end()));
 	return s;
 }
 
-const set& process_operator(const set& U, std::deque<set>& s, char c)
+const Set& process_operator(const Set& U, std::deque<Set>& s, char c)
 {
-	const auto neg = [&U](const set& a) -> set {
+	const auto neg = [&U](const Set& a) -> Set {
 		if (!a.empty())
 			return {};
-		set s;
+		Set s;
 		rng::set_difference(U, a, std::inserter(s, s.end()));
 		return s;
 	};
@@ -61,28 +61,26 @@ std::set<char> getVariables(const std::string& s)
 {
 	std::set<char> vars;
 	for (char c : s)
-	{
 		if (std::isalpha(c))
 			vars.emplace(c);
-	}
 	return vars;
 }
 
-set buildUniverse(const std::vector<std::vector<int>>& sets)
+Set buildUniverse(const std::vector<std::vector<int>>& sets)
 {
 	const auto acc = [](auto&& acc, const auto& vec) {
 		acc.insert(vec.begin(), vec.end());
 		return acc;
 	};
-	return std::accumulate(sets.begin(), sets.end(), set(), acc);
+	return std::accumulate(sets.begin(), sets.end(), Set(), acc);
 }
 
-std::unordered_map<char, set> assignVariables(const std::set<char>& vars,
+std::unordered_map<char, Set> assignVariables(const std::set<char>& vars,
 											  const std::vector<std::vector<int>>& sets)
 {
-	std::unordered_map<char, set> varMap;
+	std::unordered_map<char, Set> varMap;
 	const auto tfm = [](char var, const auto& rng) {
-		return std::make_pair(var, set(rng.begin(), rng.end()));
+		return std::make_pair(var, Set(rng.begin(), rng.end()));
 	};
 	rng::transform(vars, sets, std::inserter(varMap, varMap.end()), tfm);
 	return varMap;
@@ -94,15 +92,15 @@ std::vector<int> eval_set(const std::string& f,
 {
 	const auto U = buildUniverse(sets);
 	const auto varMap = assignVariables(vars, sets);
-	const auto acc = [&](auto&& acc, char c)
+	const auto acc = [&](auto&& res, char c)
 	{
 		if (std::isalpha(c))
-			acc.emplace_back(varMap.at(c));
+			res.emplace_back(varMap.at(c));
 		else if (is_operator(c))
-			process_operator(U, acc, c);
-		return acc;
+			process_operator(U, res, c);
+		return res;
 	};
-	const auto result = std::accumulate(f.begin(), f.end(), std::deque<set>(), acc).front();
+	const auto result = std::accumulate(f.begin(), f.end(), std::deque<Set>(), acc).front();
 	return { result.begin(), result.end() };
 }
 

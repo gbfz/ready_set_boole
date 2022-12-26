@@ -10,7 +10,7 @@
 
 namespace SE {
 
-using set = std::set<int>;
+using Set = std::set<int>;
 
 std::vector<int> eval_set(
 		std::string f, const std::vector<std::vector<int>>& sets);
