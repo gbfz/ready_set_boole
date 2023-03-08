@@ -1,10 +1,9 @@
 #include "multiplier.hpp"
-#include <concepts>
+#include "adder.hpp"
 
 namespace {
 
-	template <std::unsigned_integral T>
-	auto multiplier_impl(T a, T b, T product) {
+	auto multiplier_impl(uint32_t a, uint32_t b, uint32_t product) -> uint32_t {
 		if (b == 0)
 			return product;
 		if (b & 1)

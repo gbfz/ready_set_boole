@@ -1,4 +1,5 @@
 #pragma once
-#include "../ast/source/ASTree.hpp"
+
+#include <string>
 
 bool eval_formula(const std::string& formula);

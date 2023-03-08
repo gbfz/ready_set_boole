@@ -1,8 +1,10 @@
 #pragma once
-#include "../ast/source/ASTree.hpp"
+
+#include <string>
+#include <vector>
 #include <map>
 
-class TT
+class TruthTable
 {
 public:
 	using Table = std::map<std::pair<char, int>, int>;

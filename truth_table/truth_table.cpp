@@ -1,6 +1,9 @@
-#include "TT.hpp"
+#include "truth_table.hpp"
+#include "ASTree.hpp"
 #include <set>
 #include <iostream>
+
+using TT = TruthTable;
 
 bool TT::generateTable(const std::string& f)
 {

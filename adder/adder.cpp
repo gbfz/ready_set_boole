@@ -1,10 +1,8 @@
 #include "adder.hpp"
-#include <concepts>
 
 namespace {
 
-	template <std::unsigned_integral T>
-	auto adder_impl(T sum, T carry) -> T {
+	auto adder_impl(uint32_t sum, uint32_t carry) -> uint32_t {
 		if (carry == 0)
 			return sum;
 		return adder_impl(sum ^ (carry << 1), sum & (carry << 1));
