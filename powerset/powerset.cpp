@@ -1,21 +1,19 @@
 #include "powerset.hpp"
-#include <cstddef>
 
-std::vector<std::vector<int>> powerset(const std::vector<int>& v)
+std::vector<std::vector<int>> powerset(std::vector<int> const& v)
 {
-	std::vector<std::vector<int>> pset;
-	std::vector<int> branch;
+	std::vector<std::vector<int>> out;
 
-	auto accumulateSubsets = [&](size_t start, auto&& this_fun) -> decltype(pset)
+	for (int elem : v)
 	{
-		pset.emplace_back(branch);
-		for (auto i = start; i < v.size(); ++i)
+		for (int i = 0, size = out.size(); i < size; ++i)
 		{
-			branch.emplace_back(v[i]);
-			this_fun(i + 1, this_fun);
-			branch.pop_back();
+			auto new_set { out[i] };
+			new_set.push_back(elem);
+			out.emplace_back(std::move(new_set));
 		}
-		return pset;
-	};
-	return accumulateSubsets(0, accumulateSubsets);
+		out.emplace_back(std::vector<int> { elem } );
+	}
+	out.emplace_back(std::vector<int> {});
+	return out;
 }

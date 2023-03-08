@@ -1,4 +1,5 @@
 #pragma once
-#include "../truth_table/TT.hpp"
+
+#include <string>
 
 bool sat(const std::string& s);

@@ -1,5 +1,5 @@
 #pragma once
-#include "../negation_normal_form/NNForm.hpp"
+#include "NNForm.hpp"
 #include "CNFPattern.hpp"
 
 namespace cnf {

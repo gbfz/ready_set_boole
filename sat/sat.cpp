@@ -1,17 +1,20 @@
 #include "sat.hpp"
+#include "truth_table.hpp"
+
+#include <iostream>
 
 bool sat(const std::string& s)
 {
-	TT tt;
-	if (!tt.setFormula(s))
+	TruthTable tt;
+	if (!tt.generateTable(s))
 	{
 		std::cerr << "Invalid formula: " << s << '\n';
 		return false;
 	}
-	tt.generateTable();
-	const auto& table = tt.getTable();
-	for (size_t row = 0; row < tt.getRowCount(); ++row)
-		if (table.at({'=', row}) == true)
+	for (size_t row : tt.getResults()) {
+		if (tt.at({'=', row})) {
 			return true;
+		}
+	}
 	return false;
 }
