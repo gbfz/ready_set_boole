@@ -28,4 +28,16 @@ TEST_CASE("truth_table")
 		REQUIRE(tt.getResults() == expected);
 	}
 
+	SECTION("AB|C=D^")
+	{
+		tt.generateTable("AB|C=D^");
+		expected = {
+			0, 1, 1, 0,
+			0, 1, 1, 0,
+			0, 1, 1, 0,
+			1, 0, 0, 1,
+		};
+		REQUIRE(tt.getResults() == expected);
+	}
+
 }
