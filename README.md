@@ -11,7 +11,7 @@ Others are aimed at logical calculations. They employ a tiny abstract syntax tre
 Exercises are implemented using **C++20**, so you'll need the latest edition of your favorite compiler.
 
 ### Installation
-**meson** and **ninja** are required for building. Once you get them, run **meson setup build** in project root directory, and then **meson compile** in the generated build directory.
+[**meson**](https://mesonbuild.com/) and [**ninja**](https://ninja-build.org/) are required for building. Once you get them, run **meson setup build** in project root directory, and then **meson compile** in the generated build directory.
 
 ### Testing
 **Catch2** is used for testing. To test everything, run **meson test** in the build directory. To test exercises individually, just run binaries found in their respective directories in **build**.
