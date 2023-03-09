@@ -4,7 +4,7 @@
 This is an implementation of a series of exercises at [42](https://42.fr/en/homepage/) with introduction to boolean logic and set theory.
 Their definitions can be found in the __en.subject.pdf__ file.
 
-Several of the exercises employ mathematical *bit twiddling hacks™*.
+Several of the exercises employ mathematical bit twiddling hacks™.
 Others are aimed at logical calculations. They employ a tiny abstract syntax tree library found in **ast** directory and use it for verious computations on sets.
 
 Exercises are implemented using **C++20**, so you'll need the latest edition of your favorite compiler.
