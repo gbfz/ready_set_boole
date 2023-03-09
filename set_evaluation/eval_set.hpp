@@ -1,18 +1,8 @@
 #pragma once
-#include <set>
+
+#include <string>
 #include <vector>
-#include <unordered_map>
-#include <algorithm>
-#include <numeric>
-#include <deque>
-#include <iostream>
-#include "../negation_normal_form/NNForm.hpp"
 
-namespace SE {
-
-using Set = std::set<int>;
-
-std::vector<int> eval_set(
-		std::string f, const std::vector<std::vector<int>>& sets);
-
-}
+auto eval_set(std::string formula,
+              std::vector<std::vector<int>> const& sets)
+	-> std::vector<int>;

@@ -1,0 +1,8 @@
+[wrap-file]
+directory = libmorton-0.2.11
+source_url = https://github.com/Forceflow/libmorton/archive/refs/tags/v0.2.11.tar.gz
+source_filename = libmorton-0.2.11.tar.gz
+source_hash = 3650ce8eb3deee28bc580e5bb1594fe07f7a33aa2531490bf09b5ab8207d55f6
+
+[provide]
+libmorton = libmorton_dep

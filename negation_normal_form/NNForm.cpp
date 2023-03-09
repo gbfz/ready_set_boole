@@ -1,4 +1,5 @@
 #include "NNForm.hpp"
+#include "NNFPattern.hpp"
 
 namespace nnf {
 
@@ -40,16 +41,16 @@ ast::tree& detail::rewritePattern(ast::tree& tree)
 	return tree;
 }
 
-ast::tree& detail::generateTree(ast::tree& node)
+ast::tree& detail::generateTree(ast::tree& tree)
 {
-	if (node.empty())
-		return node;
-	rewritePattern(node);
-	if (node.size() >= 1)
-		generateTree(node.fst_child());
-	if (node.size() == 2)
-		generateTree(node.snd_child());
-	return rewritePattern(node);
+	if (tree.empty())
+		return tree;
+	rewritePattern(tree);
+	if (tree.size() >= 1)
+		generateTree(tree.fst_child());
+	if (tree.size() == 2)
+		generateTree(tree.snd_child());
+	return rewritePattern(tree);
 }
 
 std::string negation_normal_form(const std::string& s)

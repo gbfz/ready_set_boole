@@ -1,4 +1,5 @@
 #include "NNFPattern.hpp"
+#include "ASTree.hpp"
 
 namespace nnf::pattern {
 
@@ -13,18 +14,19 @@ namespace nnf::pattern {
  * Distributivity II:	AB&C|	≡	CA|CB|&
  */
 
-
 const ast::tree doubleNegationPattern()
 {
 	ast::tree pattern('!');
-	pattern.add_one('!');
-	pattern.fst_child().add_one(ast::placeholder);
+	pattern.add_one('!')
+        .fst_child()
+		.add_one(ast::placeholder);
 	return pattern;
 }
 
 ast::tree& rewriteDoubleNegation(ast::tree& tree)
 {
-	tree = tree.fst_child().fst_child();
+	auto branch = tree.fst_child().fst_child();
+	tree = branch;
 	return tree;
 }
 

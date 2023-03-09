@@ -1,5 +1,7 @@
 #include "reverse_map.hpp"
 
+#include <limits>
+
 namespace {
 
 	uint32_t deinterleave(uint32_t x)

@@ -17,5 +17,4 @@ namespace nnf::pattern {
 
 	const ast::tree deMorgans2Pattern();
 	ast::tree& rewriteDeMorgans2(ast::tree& tree);
-
 }

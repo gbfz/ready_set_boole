@@ -1,6 +1,12 @@
 #include "eval_set.hpp"
 
-namespace SE {
+#include "CNForm.hpp"
+
+#include <set>
+#include <deque>
+#include <unordered_map>
+
+#include <algorithm>
 
 namespace {
 
@@ -12,115 +18,122 @@ bool is_operator(char c)
 		|| c == '>' || c == '=' || c == '!';
 }
 
-Set operator& (const Set& a, const Set& b)
+std::set<int> operator& (std::set<int> const& a, std::set<int> const& b)
 {
-	Set s;
+	std::set<int> s;
 	rng::set_intersection(a, b, std::inserter(s, s.end()));
 	return s;
 }
 
-Set operator| (const Set& a, const Set& b)
+std::set<int> operator| (std::set<int> const& a, std::set<int> const& b)
 {
-	Set s;
+	std::set<int> s;
 	rng::set_union(a, b, std::inserter(s, s.end()));
 	return s;
 }
 
-Set operator^ (const Set& a, const Set& b)
+std::set<int> operator^ (std::set<int> const& a, std::set<int> const& b)
 {
-	Set s;
+	std::set<int> s;
 	rng::set_symmetric_difference(a, b, std::inserter(s, s.end()));
 	return s;
 }
 
-const Set& process_operator(const Set& U, std::deque<Set>& s, char c)
-{
-	const auto neg = [&U](const Set& a) -> Set {
-		if (!a.empty())
-			return {};
-		Set s;
-		rng::set_difference(U, a, std::inserter(s, s.end()));
-		return s;
-	};
-	if (c == '!')
-		return s.front() = neg(s.front());
-	const auto a = s.front(); s.pop_front();
-	const auto b = s.front(); s.pop_front();
-	switch (c)
-	{
-		case '&': return s.emplace_front(a & b);
-		case '|': return s.emplace_front(a | b);
-		case '^': return s.emplace_front(a ^ b);
-		case '>': return s.emplace_front(neg(a) | b);
-		case '=': return s.emplace_front((a & b) | (neg(a) & neg(b)));
-	}
-	return U;
-}
-
-std::set<char> getVariables(const std::string& s)
+std::set<char> getVariables(std::string const& s)
 {
 	std::set<char> vars;
-	for (char c : s)
+	for (char c : s) {
 		if (std::isalpha(c))
 			vars.emplace(c);
+	}
 	return vars;
 }
 
-Set buildUniverse(const std::vector<std::vector<int>>& sets)
+std::set<int> buildUniverse(std::vector<std::vector<int>> const& sets)
 {
-	const auto acc = [](auto&& acc, const auto& vec) {
-		acc.insert(vec.begin(), vec.end());
-		return acc;
-	};
-	return std::accumulate(sets.begin(), sets.end(), Set(), acc);
+	std::set<int> out;
+	for (auto const& set : sets) {
+		out.insert(set.begin(), set.end());
+	}
+	return out;
 }
 
-std::unordered_map<char, Set> assignVariables(const std::set<char>& vars,
-											  const std::vector<std::vector<int>>& sets)
+auto assignVariables(std::set<char> const& vars,
+                     std::vector<std::vector<int>> const& sets)
+	-> std::unordered_map<char, std::set<int>>
 {
-	std::unordered_map<char, Set> varMap;
-	const auto tfm = [](char var, const auto& rng) {
-		return std::make_pair(var, Set(rng.begin(), rng.end()));
+	std::unordered_map<char, std::set<int>> varMap;
+	auto map_var_to_set = [](char var, auto const& rng) -> std::pair<char, std::set<int>> {
+		return { var, { rng.begin(), rng.end() } };
 	};
-	rng::transform(vars, sets, std::inserter(varMap, varMap.end()), tfm);
+	rng::transform(vars, sets, std::inserter(varMap, varMap.end()), map_var_to_set);
 	return varMap;
 }
 
-std::vector<int> eval_set(const std::string& f,
-						  const std::vector<std::vector<int>>& sets,
-						  const std::set<char>& vars)
+void process_operator(std::deque<std::set<int>>& s, char c, auto&& negate)
 {
-	const auto U = buildUniverse(sets);
-	const auto varMap = assignVariables(vars, sets);
-	const auto acc = [&](auto&& res, char c)
+	if (c == '!') {
+		s.front() = negate(s.front());
+		return;
+	}
+	auto a = std::move(s.front()); s.pop_front();
+	auto b = std::move(s.front()); s.pop_front();
+	std::set<int> out;
+	switch (c)
 	{
-		if (std::isalpha(c))
-			res.emplace_back(varMap.at(c));
-		else if (is_operator(c))
-			process_operator(U, res, c);
-		return res;
+		case '&': out = a & b; break;
+		case '|': out = a | b; break;
+		case '^': out = a ^ b; break;
+		case '>': out = negate(a) | b; break;
+		case '=': out = (a & b) | (negate(a) & negate(b)); break;
+	}
+	s.emplace_front(std::move(out));
+}
+
+auto eval_set(std::string const& formula,
+              std::vector<std::vector<int>> const& sets,
+              std::set<char> const& vars)
+	-> std::vector<int> 
+{
+	auto const universe = buildUniverse(sets);
+	auto negate = [&universe](std::set<int> const& s) -> std::set<int>
+	{
+		if (!s.empty())
+			return {};
+		std::set<int> out;
+		rng::set_difference(universe, s, std::inserter(out, out.end()));
+		return out;
 	};
-	const auto result = std::accumulate(f.begin(), f.end(), std::deque<Set>(), acc).front();
-	return { result.begin(), result.end() };
+
+	auto const varMap = assignVariables(vars, sets);
+	std::deque<std::set<int>> states;
+	for (char c : formula)
+	{
+		if (is_operator(c)) {
+			process_operator(states, c, negate);
+		} else {
+			states.emplace_back(varMap.at(c));
+		}
+	}
+	auto const out { std::move(states.front()) };
+	return { out.begin(), out.end() };
 }
 
 } // anonymous namespace 
 
-std::vector<int> eval_set(std::string f, const std::vector<std::vector<int>>& sets)
+std::vector<int> eval_set(std::string formula, std::vector<std::vector<int>> const& sets)
 {
-	if (!ast::validate(f))
+	if (!ast::validate(formula))
 	{
-		std::cerr << "Invalid formula: " << f << '\n';
+		std::cerr << "Invalid formula: " << formula << '\n';
 		return {};
 	}
-	f = nnf::negation_normal_form(f);
-	const auto vars = getVariables(f);
+	formula = cnf::conjunctive_normal_form(formula);
+	const auto vars = getVariables(formula);
 	if (vars.size() != sets.size())
 	{
 		std::cerr << "Number of variables does not match number of sets\n";
 		return {};
 	}
-	return eval_set(f, sets, vars);
+	return eval_set(formula, sets, vars);
 }
-
-} // namespace SE

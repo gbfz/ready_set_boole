@@ -1,3 +1,4 @@
+#include "ASTree.hpp"
 #include "NNForm.hpp"
 #include <catch2/catch_test_macros.hpp>
 
@@ -15,6 +16,14 @@ TEST_CASE("negation_normal_form", "[negation_normal_form]")
 	SECTION("Double negation")
 	{
 		auto formula = "A!!";
+		auto norm = nnf::negation_normal_form(formula);
+
+		REQUIRE(norm == "A");
+	}
+
+	SECTION("Quadruple negation")
+	{
+		auto formula = "A!!!!";
 		auto norm = nnf::negation_normal_form(formula);
 
 		REQUIRE(norm == "A");
@@ -63,9 +72,9 @@ TEST_CASE("negation_normal_form", "[negation_normal_form]")
 	SECTION("Empty")
 	{
 		auto formula = "";
-		auto normalized = nnf::negation_normal_form(formula);
+		auto norm = nnf::negation_normal_form(formula);
 
-		REQUIRE(normalized == "");
+		REQUIRE(norm == "");
 	}
 
 	SECTION("Complex")
@@ -75,5 +84,4 @@ TEST_CASE("negation_normal_form", "[negation_normal_form]")
 
 		REQUIRE(norm == "AB|C&D!&A!B!&C!|D&|X|");
 	}
-
 }

@@ -2,25 +2,16 @@
 
 namespace ast {
 
-tree::tree(int value) : value(value) {}
+tree::tree(char value) : value(value) {}
 
-tree::tree(const tree& other) : std::vector<ast::tree>(), value(other.value)
-{
-	assign(other.begin(), other.end());
-}
+size_t tree::size() const { return m_branches.size(); }
+bool tree::empty() const { return m_branches.empty(); }
 
-tree& tree::operator= (const tree& other)
-{
-	value = other.value;
-	assign(other.begin(), other.end());
-	return *this;
-}
+tree& tree::fst_child() { return m_branches.front(); }
+const tree& tree::fst_child() const { return m_branches.front(); }
 
-tree& tree::fst_child() { return front(); }
-const tree& tree::fst_child() const { return front(); }
-
-tree& tree::snd_child() { return back(); }
-const tree& tree::snd_child() const { return back(); }
+tree& tree::snd_child() { return m_branches.back(); }
+const tree& tree::snd_child() const { return m_branches.back(); }
 
 bool tree::exec() const
 {
@@ -91,7 +82,7 @@ void printTree(const std::string& pref, const tree& node, bool isRight)
 	}
 }
 
-void printTree(const tree& node)
+void print(const tree& node)
 {
 	printTree("", node, false);
 }
