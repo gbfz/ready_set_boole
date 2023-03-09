@@ -1,6 +1,8 @@
 #include "eval_formula.hpp"
 #include <catch2/catch_test_macros.hpp>
 
+#include "ASTree.hpp"
+
 TEST_CASE("eval_formula", "[eval_formula]")
 {
 
@@ -50,6 +52,12 @@ TEST_CASE("eval_formula", "[eval_formula]")
 	SECTION("Compound long 1")
 	{
 		auto formula = "10^00||0=1&";
+		REQUIRE(eval_formula(formula) == false);
+	}
+
+	SECTION("Compound long 2")
+	{
+		auto formula = "10|0^011==0||0=1&11|>";
 		REQUIRE(eval_formula(formula) == false);
 	}
 
